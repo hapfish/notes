@@ -13,7 +13,18 @@
 
 
   
+```
+# git clone git@github.com:CentOS/sig-cloud-instance-images
+# git branch
+# git branch -r
+# git checkout -b CentOS-7.1.1503 origin/CentOS-7.1.1503
+```
 
+git config  
+```
+# git config user.email "hapfish@vip.qq.com"
+# git config user.name "li dongxu"
 
+```
 
 
