@@ -500,7 +500,7 @@ MySQL索引:
 ```  
 alter table tableName add index indexName (indexColumns);
 alter table tableName add unique indexName (indexColumns);
-alter table tableName add primary key (indexColumn);
+alter table tableName add primary key (indexColumns);
 alter table tableName add FULLTEXT indexName (indexColumns);
 alter table tableName add spatial indexName (indexColumns);
 
@@ -525,7 +525,7 @@ create table tableName (
    ...
    index indexName (indexColumns),
    unique indexName (indexColumns),
-   primary key (indexColumn),
+   primary key (indexColumns),
    fulltext indexName (indexColumns),
    spatial indexName (indexColumns),
    
@@ -687,6 +687,443 @@ select t1.*, t2.* from t1 inner join t2;
 
 根据某个数据表里的每一个数据行与另一个数据表里的每一个数据行得到全部可能的组合的联结操作叫做生成笛卡尔积(cartesian product).  
 
+让联结操作只对数据表里的特定数据列里的值进行匹配.  
+` mysql> select t1.*, t2.* from t1 inner join t2 where t1.i1 = t2.i2; `  
+
+cross join和join联结类型类似于 inner join, 比如说, 下面的语句是等价:  
+```  
+select t1.*, t2.* from t1 inner join t2 where t1.i1 = t2.i2;
+select t1.*, t2.* from t1 cross join t2 where t1.i1 = t2.i2;
+select t1.*, t2.* from t1 join t2 where t1.i1 = t2.i2;
+
+```  
+
+","(逗号)关联操作符的效果与inner join相似:  
+` select t1.*, t2.* from t1, t2 where t1.i1 -t2.i2; `  
+逗号操作符的优先级和其它联结类型不一样, 有时还会导致语法错误. 而其它联结类型没有这些问题. 作者认为应该尽量避免使用逗号操作符.  
+
+inner join, cross join和join(注意, 不包括逗号操作符)还支持另外几种用来表明如果对数据表里的数据列进行匹配的语法变体.  
+> (1) 用一条on子句替代where子句  
+` select t1.*, t2.* from t1 inner join t2 on t1.i1 = t2.i2; `  
+不管被联结的数据库是否同名, on子句都可以使用.  
+> (2) 另一种语法是使用一个using()子句, 它在概念上类似于on语句. 但要求被联结的数据列必须是同名的.  
+` select table1.*, table2.* from table1 inner join table2 using (col1); `  
+
+
+为消除在引用数据列时可能产生歧义问题, 给该数据表的一个实例分配了一个别名.  
+```  
+ select mytable .col1, m.col2 from mytable inner join mytable as m 
+   where mytable .col1 > m.col1   
+```  
+
+
+内联结显示在两个数据表里都能找到匹配的数据行. 外联结除了显示同样的匹配结果, 还可以把其中一个数据表在另一个数据表没有匹配的数据行也显示出来. 外联结分左联结和右联结两种. 
+大多数例子使用的是left join, 意思是把左数据表在右数据表里没有匹配的数据行也显示出来. right join与此刚好相反, 它将把右侧数据表在左侧数据表里没有匹配的数据也显示出来. 数据表的角色调换了一下.  
+left join对某个数据进行匹配时, 那两个数据行的内容就会被选取为一个输出数据行; 找不到匹配时, 也会选取为一个输出数据行. 此时与它联结的是一个来自右数据表的"假"数据行, 这个"假"数据行的所有数据列都包含NULL值.  
+` select t1.*, t2.* from t1 left join t2 on t1.i1 = t2.i2; `  
+
+使用left join时需要注意这样一个问题: 如果右数据列没有全部定义成NOT NULL, 结果集里的数据行就可能不能反映真实情况. 如果右数据表里的某个数据列允许取值为NULL并被收录在结果集里, 用这个数据列里的NULL值来判断"在右数据表里没有匹配"就可能出问题.  
+下面两条语句是等价的:  
+```  
+select t1.*, t2.* from t1 left join t2 on t1.i1 = t2.i2;
+select t1.*, t2.* from t2 right join t1 on t1.i1 = t2.i2; 
+
+```  
+
+left join很有用, 尤其是在你只想找出右数据表里没有匹配的左数据表的行时:  
+```  
+select t1.*, t2.* from t1 left join t2 on t1.i1 = t2.i2 where t2.i2 is NULL; 
+select t1.* from t1 left join t2 on t1.i1 = t2.i2 where t2.i2 is NULL; 
+
+```  
+
+left join也可以写成使用一个on子句或一个using()子句来给出匹配条件. 与inner join的情况相同, on子句不管被联结的数据列是否同名都可以使用, using()子句要求被联结的数据列必须有同样的名字.  
+left join还有几种同义词和变体, left outer join是left join的一个同义词. MySQL还支持一种ODBC风格的left join表示法. 该表示法使用了花括号和OJ(outer join):  
+` select t1.* from { OJ t1 left outer join t2 on t1.i1 = t2.i2 } where t2.i2 is null; `  
+natural left join类似与left join, 它将按照left join规则对左, 右数据表里所有同名的数据列进行匹配(也就是说, 它不需要你给出任何on或using()子句).  
+
+
+
+
+MySQL支持子查询(subquery), 也就是把一条select语句用括号括起来嵌入另一个select语句.  
+```  
+  select * from score 
+     where event_id in ( select event_id from grade_event where categroy = 'T' );
+```  
+
+子查询返回以下不同类型的信息:  
+> (1) 标量子查询将返回一个值.  
+> (2) 数据列子查询将返回一个由一个或多个值构成的数据列.  
+> (3) 数据行子查询将返回一个由一个或多个值构成的数据行.  
+> (4) 数据表子查询将返回一个由一个或多个数据行构成的数据表, 数据行可以由一个或多个数据列构成.  
+
+
+子查询的结果可以用以下不同的办法进行测试:  
+> (1) 标量子查询的结果可以用诸如 "=" 或 "<" 之类的相对比较操作符进行求值.  
+> (2) 可以用IN或NOT IN操作符测来测试某给定值是否包含在子查询的结果集里.  
+> (3) 可以用ALL, ANY和SOME操作符把某给定值与子查询的结果集进行比较.  
+> (4) 可以用EXISTS和NOT EXISTS 操作符来测试子查询的结果集是否为空.  
+
+标量子查询是最严格的, 它只产生一个值, 也正是因为如此. 标量子查询的适用范围最大.  
+子查询不允许引用正在被修改的数据表.  
+有时候, 为了确保子查询返回且只返回一个值, 有必要用limit 1 对子查询的结果加以限制.  
+
+查询最早的出生日期:  
+```  
+select * from president where birth = 
+ ( select min(birth) from president );
+
+```  
+
+高于平均分数的分数:  
+```  
+select * from score where event_id = 5
+  and score > ( select avg(score) from score where event_id = 5 );
+
+```  
+
+
+查询将返回多个数据行, 可以使用IN或NOT IN操作符来构造主查询的检索条件. IN和NOT IN操作符的用途是测试一个给定的比较值有没有出现在一个集合里.  
+只要主查询里的数据行与子查询所返回的任何一个数据行匹配, IN操作符的结果就将是true. 如果主查询里的数据行与子查询所返回的所有数据行都不匹配, NOT IN操作符的比较结果将是true.  
+```  
+select * from student where student_id in ( select student_id from absence );
+select * from student where student_id not in ( select student_id from absence );
+
+```  
+
+
+ALL和ANY操作符的常见用法是结合一个相对比较操作符对一个数据列子查询的结果进行测试. 它们测试比较值是否与子查询所返回的全部或部分值匹配. 如果比较值小于或等于子查询所有返回的每一个值, <= ALL将是true. 只要比较值小于或等于子查询所返回的任何一个值, <= ANY将是true. SOME是ANY的一个同义词.  
+```  
+select * from president where 
+  birth <= ALL ( select birth from president );
+  
+select * from president where 
+  birth <= ANY ( select birth from president );  
+
+```  
+IN和NOT IN操作符是 = ANY 和 <> ALL 的简写. IN操作符的含义是"等于子查询所返回的某个数据行", NOT IN操作符的含义是"不等于子查询所返回的任何数据行".  
+
+
+
+EXISTS和NOT EXISTS操作符只测试某个子查询是否返回了数据行, 如果是, EXISTS将是true, NOT EXISTS将是false.  
+```  
+select exists ( select * from absence );
+select not exists ( select * from absence );
+  
+```  
+
+确保子查询成功时返回一个true值的话, 写成select 1 比写成select * 更保险.  
+
+子查询可以与主查询相关, 也可以与主查询无关.  
+> (1) 与主查询无关的子查询不引用主查询里的任何值.  
+` select i from t2 where j in ( select i from t1 ); `  
+> (2) 与主查询相关的子查询需要引用主查询的值, 所以必须依赖于主查询.  
+` select j from t2 where ( select i from t1 where i = j );  `  
+
+与主查询相关的子查询通常在EXISTS和NOT EXISTS子查询里.  
+EXISTS子查询用来确定数据表之间的匹配, 也就是在两个数据表里都有的值.  
+NOT EXISTS操作符用来寻找不匹配的值, 在一个数据表里有但在其它数据表里没有的值.  
+
+子查询可以在from子句里生成一些值.  
+` select * from ( select 1, 2) as t1 inner join ( select 3, 4) as t2; `  
+
+
+有时候, 联结查询要比子查询的执行效率更高. 所以把子查询改写为联结查询是个不坏的注意.  
+子查询和关联查询可能返回不同的结果, 防止重复, 在编写联结查询命令时就要用select distinct来代替select.  
+子查询语句的另一种常见用法是检索在一个数据表里有, 另一个数据表里没有的值. 与"哪些值没有出现"有关的问题通常可以用left join来解决.  
+与left join相比, 子查询具有比较直观和容易理解的优点. 绝大多数人都可以毫无困难地理解"没有包含在...里面"的含义. 它不是数据库编程带来的新概念. "左联结"这个概念就不同了, 就算是数据库方面的专业人士也不见得都能解释透彻.  
+
+
+
+
+如果想把多个查询的结果合并在一起创建一个结果集, 可以使用union语句来做这件事.  
+` select i from t1 union select i from t2 union select i from t3; `  
+
+union结果集里的数据列名字来自第一个select语句里的数据列的名字. union中的第二个和再后面的select语句必须选取个数相同的数据列. 但各有关数据项不必有同样的名字或数据类型. (一般来讲, 同一条union语句里的各有关数据列会是相同的数据类型. 但这并不是一项要求, 如果它们不一样, MySQL会进行必要的类型转换.) 数据列根据位置而不是根据名字进行匹配的. 这也正是下面两条语句返回不同结果的原因.  
+```  
+select i, c from t1 union select i ,d from t3;
+select i, c from t1 union select d, i from t3;
+
+```  
+
+在默认情况下, union将从结果集里剔除重复的数据行.  
+union distinct是union的同义词, 它们都是只保留不重复的数据行. 想保留重复的数据行, 需要把每个union都改为union all.  
+` select * from t1 union all select * from t2 union all select * from t3; `  
+
+如果把union(或union distinct)和union all混杂在一起使用, 每个union(或union distinct)操作将优先于它左边的任何union all操作.  
+
+如果将union结果作为一个整体进行排序, 需要使用括号把每一个select语句括起来并在最后一个select子句的后面加上一个order by子句. 因为union的结果数据列的名字来自第一个select语句, 在order by 子句里必须引用那些名字而不是引用来自最后一个select语句的数据列名字.  
+` ( select i ,c from t1 ) union ( select i, d from t3 ) order by c; `  
+如果某个排序数据列有别名, 位于union语句末尾的order by子句必须引用那个别名.  
+
+限制union语句所有输出的数据行的个数, 可以在语句末尾加上一个limit子句.  
+```  
+( select * from t1 ) union ( select * from t2 ) union ( select * from t3 ) limit 2; 
+
+```  
+
+union语句中, order by和limit还可以用在被括号括起来的各条"子句"里, 此时, 它们将只作用于那条select语句:  
+```  
+( select * from t1 order by i limit 2 ) 
+  union ( select * from t2 order by i limit 1 ) 
+  union ( select * from t3 order by d limit 2 );
+
+```  
+
+MERGE数据表上的select语句相当于union all(不剔除重复的数据行), select distinct相当于union或union distinct(剔除重复的数据行).  
+
+
+
+
+
+视图是一种虚拟的数据表, 它们的行为和数据表一样, 但是并不真正包含数据. 它们是用底层(真正的)数据表或其它视图定义出来的"假"数据表. 用来提供查看数据表数据的另一种方法, 这通常可以简化应用程序.  
+```  
+create view viewName as
+  select c1, c2, c3, c4 from tableName;
+  
+select * from viewName;  
+
+```  
+
+查询视图还可以使用order by, limit子句. 其效果与查询一个真正的数据表的情况一样.  
+想明确地改用另外的数据列名字, 需要在定义视图时在视图名字的后面用括号列出那些新的名字:  
+```  
+create view viewName (colName1, colName2) as 
+  select c1, c2 from tableName;
+  
+select colName1, colName2 from viewName;  
+  
+```  
+
+同一个视图可以涉及多个数据表, 这使得联结查询的编写和运行变得更容易.  
+
+要想一个视图是可更新的, 它必须直接映射到另一个数据表上. 它选取的数据列只能是数据表里数据列的简单引用(不能是表达式). 视图里的单行操作必须对应其底层数据表的一个单行操作.  
+
+
+
+这条语句将从数据表t1里把其id值可以在另一个数据表t2里找到的数据行全部删除掉:  
+` delete t1 from t1 inner join t2 on t1.id = t2.id; `  
+
+delete语句有一种写法可以让我们一次删除多个数据表里的数据行.  
+` delete t1, t2 from t1 left join t2 on t1.id = t2.id; `  
+
+删除不匹配的数据行:  
+` delete t1 from t1 left join t2 on t1.id = t2.id where t2.id is null; `  
+
+使用一个using子句来联结各有关数据表以确定哪些数据行需要被删除:  
+```  
+delete from t1 using t1 inner join t2 on t1.id = t2.id;
+delete from t1, t2 using t1 inner join t2 on t1.id = t2.id;
+delete from t1 using t1 left join t2 on t1.id = t2.id where t2.id is null;
+
+```  
+
+编写涉及多个数据表的update语句的基本步骤与编写涉及多个数据表的delete语句很相似.  
+对InnoDB数据表进行多数据表删除和刷新操作, 你不必非得使用刚才介绍的语法, 更好的办法是在数据表之间建立一个外键关系并给它加上on delete cascade或on update cascade约束条件.  
+
+
+
+事务(transaction) 是作为一个不可分割的逻辑单元而被执行的一组SQL语句. 如有必要, 它们的执行效果可以被撤销. 事务处理是通过提交(commit)和回滚(rollback)功能实现的. 如果某个事物里的所有语句都执行成功了, 提交该事务将把那些语句的执行效果永久地记录到数据库里. 如果在事务过程中发生错误, 回滚该事务将把错误之前已经执行的语句全部取消, 数据库将恢复到开始这次事务之前的状态.  
+
+事务机制的特性通常被概括为"ACID"原则. ACID是 Atomic(原子性), Consistent(稳定性), Isolated(孤立性) 和 Durable(可靠性)的首字符缩写. 它们分别代表事务机制应该具有的一个属性.  
+> (1) 原子性.  构成一个事务的所有语句应该是一个独立的逻辑单元, 要么全部执行成功, 要么一个都不成功. 你不能只执行它们当中的一部分.    
+> (2) 稳定性.  数据库在事务开始执行之前和事务执行完毕之后都必须是稳定的. 换句话说, 事务不应该把你的数据库弄得一团糟.  
+> (3) 隔离性.  事务不应该相互影响.  
+> (4) 可靠性.  如果事务执行成功, 它的影响将被永久地记录到数据库里.  
+
+MySQL提供了几种具备事务安全性的存储引擎(如InnoDB和Falcon)和一些不具备事务安全性的存储引擎(如MyISAM和MEMORY).  
+在默认情况下, MySQL从自动提交(autocommit)模式运行, 这种模式会在每条语句执行完毕后把它作出的修改立刻提交给数据库并使之永久化.  
+执行事务的常用办法是发出一条start transaction(或begin)语句挂起自动提交模式, 然后执行构成本次事物的各条语句, 最后一条commit语句结束事务并把它们作出的修改永久性地计入数据库. 万一在事务过程中发生错误, 用一条rollback语句撤销事务并把数据库恢复到事务开始之前的状态.  
+
+演示:
+```  
+mysql> create table t ( name char(20), unique (name) ) engine = InnoDB;
+
+mysql> start transaction;
+mysql> insert into t set name = 't1';
+mysql> insert into t set name = 't2';
+mysql> commit;
+mysql> select * from from t;
+
+```  
+
+```  
+mysql> start transaction;
+mysql> insert into t set name = 't3';
+mysql> insert into t set name = 't1';
+ERROR 1062(23000): Duplicate entry
+
+mysql> rollback;
+mysql> select * from t;
+
+```  
+
+执行事务的另一个办法是利用set语句直接改变自动提交模式的状态.  
+```  
+set autocommit = 0;
+set sutocommit = 1;
+```  
+把autocommit变量设置为0将禁用自动提交模式, 其效率是随后的任何语句都成为当前事务的一部分, 直到你发出一条commit或rollback语句来提交或撤销它为止.  
+
+set autocommit, start transaction, begin, commit和rollback语句会明确地对事物产生影响, 除它们以外, 还有一些语句会对事物产生隐式影响, 因为它们不能成为事务的一部分. 用来创建, 改变或删除数据库或其中的对象的DDL(Data Definition Language, 数据库定义语言)语句以及锁定有关的语句都不可能成为事务的一部分.  
+在事务过程中发出了下面这些语句之一, 服务器在执行该语句之前提交事务:  
+```  
+alter table
+create index
+drop database
+drop index
+drop table
+lock tables
+rename table
+set autocommit = 1 (if not already set to 1)
+truncate table
+unlock tables (if tables currently are locked)
+
+```  
+正在使用的MySQL版本有哪些语句会隐式地提交当前事务, 请查阅`<<MySQL参考手册>>`.  
+
+如果客户程序在与服务器连接意外断开后再自动重建连接, 新建的连接将被重置为激活自动提交模式的默认状态.  
+MySQL使你能够对一个事务进行部分回滚. 这需要你在事务过程中使用savepoint语句设置一些称为保存点(savepoint)的标记, 在后续的事务里, 如果你想回滚到某个特定的保存点, 在rollback语句里给出该保存点的名字就可以了. 演示:  
+```  
+mysql> create table t ( i int ) engine = InnoDB;
+mysql> start transaction;
+mysql> insert into t values (1);
+mysql> savepoint my_savepoint;
+mysql> insert into t values (2);
+mysql> rollback to savepoint my_savepoint;
+mysql> insert into t values (3);
+mysql> commit;
+
+mysql> select * from t;
+
+```  
+
+MyISAM之类的存储引擎使用了数据表级别的锁定机制来保证不同的客户端不能同时修改同一个数据表, 但这种做法在更新量比较大的系统上会导致并发性能的下降. InnoDB存储引擎采用了另一种策略, 它使用了数据行级的锁定机制为客户对数据表的访问提供了更细致的控制. 先锁定该数据行的那个客户将可以先修改它. 这比数据表级的锁定机制提供了更好的并发性能.  
+
+InnoDB存储引擎实现的事务隔离级别机制能够让客户控制他们想看到其他事物作的哪些修改. 提供了多种不同的隔离级别以允许或预防在多个事务同时运行时可能发生的各种各样的问题.
+> (1) 脏读 (dirty read).  指某个事务所作出的修改在它尚未被提交时就可以被其它事务看到. 其它事务会认为数据行已经修改了, 但对数据行作出修改的那个事务还有可能回滚, 这将导致数据库里的数据发生混乱.  
+> (2) 不可重复度 (nonrepeatable read).  指同一个事物使用同一条select语句每次读取到的结果不一样. 比如说, 如果有一个事务执行了两次同一个select语句, 但另一个事物在这条select语句的两次执行之间修改了一些数据行, 就会发生这种问题.  
+> (3) 幻影数据行 (phantom row).  指某个事物突然看到了一个它以前没有见过的数据行. 比如说, 如果某个事物刚执行完一条select语句就有另外一个事务插入了一个新数据行, 前一个事务再执行同一条select语句时就可能看到一个新的数据行, 那就是一个幻影数据行.  
+
+为了解决这些问题, InnoDB存储引擎提供了4种隔离级别, 这些隔离级别用来确定允许某个事务看到与之同时执行的其它事务所作出的哪些修改.  
+> (1) READ UNCOMMITTED.  允许某个事物看到其它尚未提交的数据行改动.  
+> (2) READ COMMITTED.  只允许某个事物看到其它事务已经提交的数据行改动.  
+> (3) REPEATABLE READ.  如果某个事物两次执行同一个select语句, 其结果是可重复的. 换句话说, 即使有其它事务在同时插入或修改数据行, 这个事务所看到的结果也是一样的.  
+> (4) SERIALIZABLE.  这个隔离级别与REPEATABLE READ很相似. 但对事物的隔离更彻底. 某个事物正在查看的数据行不允许其它事务修改, 直到该事务完成为止. 换句话说, 如果某个事务正在读取某些数据行, 在它完成之前, 其它事务将无法对那些数据行修改.  
+
+InnoDB 4种隔离级别以及它们是否允许脏读, 不可重复度或幻影数据行等问题, 只适用于InnoDB存储引擎 -- REPEATABLE READ隔离级别不能容忍幻影数据行. 有些数据库系统的REPEATABLE READ隔离级别允许出现幻影数据行.  
+
+<table>
+<tr>
+ <th>隔离级别</th>  <th>脏读</th>  <th>不可重复度</th>  <th>幻影数据行</th>
+</tr>
+
+<tr>
+ <td>READ UNCOMMITTED</td>  <td>是</td>  <td>是</td>  <td>是</td>
+</tr>
+
+<tr>
+ <td>READ COMMITTED</td>  <td>否</td>  <td>是</td>  <td>是</td>
+</tr>
+
+<tr>
+ <td>REPEATABLE READ</td>  <td>否</td>  <td>否</td>  <td>否</td>
+</tr>
+
+<tr>
+ <td>SERIALIZABLE</td>  <td>否</td>  <td>否</td>  <td>否</td>
+</tr>
+
+</table>
+
+
+InnoDB存储引擎默认使用的隔离级别是REPEATABLE READ. 可以通过在启动服务器时使用 --transaction-isolation 选项或在服务器运行时使用 SET TRANSACTION语句来改变, 该语句有3种形式:  
+```  
+SET GLOBAL TRANSACTION ISOLATION LEVEL levelName;
+SET SESSION TRANSACTION ISOLATION LEVEL levelName;
+SET TRANSACTION ISOLATION LEVEL levelName;
+
+```  
+super权限的客户可以直接使用SET TRANSACTION语句改变全局隔离级别的设置. 该设置将作用于此后连接到服务器的任何客户. 此外, 任何客户都可以修改它自己的事务隔离级别. 用SET SESSION TRANSACTION语句做出的修改将作用于在与服务器的本次会话后续的所有事务. 用SET TRANSACTION语句做出的修改只作用于下一条事务, 客户在修改它自己的隔离级别时不需要任何特殊的权限.  
+
+Falcon和InnoDB存储引擎在这方面的主要区别是: Falcon不支持READ UNCOMMITTED隔离级别, 它目前也不支持SERIALIZABLE隔离级别 (但Falcon开发团队正在为此而努力着).  
+
+把多条语句用LOCK TABLES和UNLOCK TABLES语句括起来就可以把他们当作一个单元来执行: 锁定需要使用的所有数据表, 发出你的语句, 解除锁定. 这可以防止其他人在你锁定有关数据表期间修改它们.  
+
+"读操作"锁允许其它客户在你使用被锁定数据表时读取它, 但不允许对之进行写操作.  
+
+锁定机制需要你锁定和释放数据表.  
+
+事务机制可以把一组语句当作一个不可分割的单元来执行, 并防止客户之间彼此干扰. 从而有效地管理好并发问题. 它提供的回滚功能还可以在发生意外时避免尚未全部完成的操作损坏数据库, 还可以自行判断并获得必要的锁操作.  
+
+在某次事务中混和使用事务数据表和非事务数据表是允许的, 但最终结果不一定符合你的期望. 对非事务表进行操作的语句总是立即生效. 即使自动提交模式处于禁用状态也是如此. 非事务表永远待在自动提交模式下. 每条语句都会在执行完毕后立即提交. 如果你在一个事务里修改了一个非事务数据表, 那么这个修改无法撤消.  
+
+
+
+
+利用外建(foreign key)关系可以在某个数据表里声明与另一个数据表里的某个索引相关联的索引.  
+
+外键不仅在数据行的插入操作中很有用, 在删除和更新操作中也很有用. 数据表里有关的所有数据行也将自动被删除, 被称为级联删除(cascaded delete), 因为删除操作的效果就像瀑布(cascade)那样从一个数据表"流淌"到另外一个数据表. 级联更新也是可能的.  
+
+InnoDB存储引擎提供了外键支持, 术语:  
+> (1) 父表, 包括原始键值的数据表.  
+> (2) 子表, 引用父表的键值的相关数据表.  
+
+父表中的键值用来关联两个数据表, 具体来说, 子表中的某个索引引用父表中的某个索引. 子表的索引值必须匹配父表中的索引值或是被设置为NULL, 以表明在父表里不存在与之对应的数据行. 子表里的索引就是所谓的"外键". 因为它们存在父表的外部, 但包含指向父表的值. 外键关系可以被设置成不允许使用NULL值, 此时所有的外键值都必须匹配父表里的某个值.  
+
+InnoDB存储引擎通过这些规则来保证在外键关系里不会有不匹配的东西, 这被称为引用完整性(referential integrity).  
+
+在子表里定义外键的语法:  
+```  
+[ constraint constraintName]
+foreign key [fkName] (indexColumns)
+  references tableName (indexColumns)
+    [on delete actionName]
+    [on update actionName]
+    [match full | match partial | match simple]	
+	
+	
+```  
+
+InnoDB存储引擎目前还没有实现所有的子句: 它目前还不支持match子句. 即使给出一条match子句, 它也会被忽略. 有几种action的值目前只能被识别出来, 但不会有任何效果.(除InnoDB以外的存储引擎在遇到foreign key定义时不会报任何错误, 但会把它整个忽略掉)  
+
+InnoDB存储引擎能够识别和支持以下外键定义语法成分.  
+> (1) constraint子句. 如果给出, 这个子句用来给外键约束关系起一个名字. 如果省略, InnoDB存储引擎将创建一个名字.  
+> (2) foreign key子句. 列出子表里的被索引数据列, 它们必须匹配父表里的索引值. fkName是外键的ID. 如果给出了一个fkName, 在InnoDB存储引擎能够为外键自动创建一个索引的情况下, 它将成为那个索引的名字. 否则, 它将被忽略.  
+> (3) references子句. 列出父表和父表中的索引数据列的名字. 子表里的外键值将引用这个子句所列出的父表数据列. 在references子句的indexColumns部分列出的数据列的个数必须与在foreign key子句的indexColumns部分列出的数据列的个数相同.  
+> (4) on delete子句. 用来设定在父表里的数据行被删除时子表应该做什么事. 如果没有on delete子句, 默认行为是拒绝从父表里删除仍有子表数据行在引用它们的数据行. 明确指定一种action, 请使用以下子句:  
+>> (4.1) on delete no action 和 no delete restrict子句. 它们含义与省略on delete子句一样. (有些数据库提供了延迟检查的功能, no action是一种延迟检查. 在MySQL里, 外键约束都是立刻被检查的. 所以no action和restrict的含义完全一样).  
+>> (4.2) on delete cascade子句. 在删除父表数据行时, 子表里与之相关联的数据行也将被删除. 只需要删除父表的数据, 就可以完成一个涉及多个数据表的删除操作了.  
+>> (4.3) on delete set null子句. 在删除父表数据行时, 子表里与之相关联的索引列将被设置为null. 使用这个选项, 就必须把外键定义里列出的所有被编制索引的子表数据列定义为允许null值. (这个动作的隐含限制是不能把外键定义为primary key, 因为主键不允许为null)  
+>> (4.4) on delete set default子句. 这个子句可以被识别出来, 但目前尚未实现. InnoDB存储引擎遇到这个子句时将报告一个错误.  
+
+> (5) on update子句. 用来设定父表里的数据行更新时子表应该发生什么事. 如果没有on update子句, 默认行为是拒绝插入或更新其外键值在父表索引里没有任何匹配的子表数据行. 并阻止仍有子表数据行仍在引用着它们的父表索引值被更新. 可供选用的action值及效果与on delete子句相同.  
+
+如果你想建立一个外键关系, 请遵守以下指示.  
+> (1) 子表必须有这样的索引, 在定义该索引时, 必须首先列出外键数据列. 父表必须有这样一个索引, 在定义索引时必须首先列出references子句里的数据列. (换句话说, 外键里的数据列在外键所涉及的两个数据表里都必须有索引.) 由InnoDB存储引擎自动创建的这种索引将是一个非唯一性的索引, 并且只包含外键数据列.
+> (2) 父表和子表索引里的对应数据列必须是兼容的数据类型. 不能让一个INT数据列去匹配一个CHAR数据列. 对应的字符数据列必须是同样的长度. 对应的整数数据列必须是同样的尺寸. 并且必须要么都带符号, 要么都被定义成unsigned.  
+> (3) 不能对外键关系里的字符串数据列的前缀编制索引.  
+
+```  
+create table parent (
+  par_id int not null,
+  primary key (par_id)
+) engine = InnoDB;
+
+create table child (
+  par_id int not null,
+  child_id int not null,
+  primary key (par_id, child_id),
+  foreign key (par_id) references parent (par_id)
+    on delete cascade
+	on update cascade
+) engine = InnoDB;	
+    	  
+```  
+定义外键使用了on delete cascade子句, 指定当parent数据表里的某个数据行被删除时, MySQL将自动地从child数据表里把有匹配par_id的值的数据行也删除. on update cascade子句表名, 如果parent数据表里的某个数据行的par_id值改变了, MySQL将自动地把child数据表里的所有匹配的par_id值也改成新值.  
+
+查看某个InnoDB数据表都有哪些外键关系, 可以使用show create tables或show table status语句.  
+创建一个带有外键关系的数据表时遇到问题, 可以使用show engine innodb status语句查看完整的出错信息.  
 
 
 
@@ -694,20 +1131,107 @@ select t1.*, t2.* from t1 inner join t2;
 
 
 
+MySQL具备全文搜索的能力, 全文搜索引擎可以在不使用模板匹配操作的情况下查找单词或短语. 全文搜索有三种模式:  
+> (1) 自然语言模式.  把搜索字符串解释为一系列单词并查找包含这些单词的数据行.  
+> (2) 布尔模式.  把搜索字符串解释为一系列单词, 但允许使用一些操作符来"修饰"这些单词以表明特定的要求, 如某给定单词必须出现(或不出现)在匹配数据行里. 某个数据行必须包含一个精确的短语, 等等.  
+> (3) 查询扩展模式.  这种搜索分两个阶段进行. 第一阶段是自然语言搜索. 第二阶段是使用原来的搜索字符串加上在第一次搜索中找到的相关度最高的匹配数据行再进行一次搜索. 这扩大了搜索范围, 它可以把与原来的搜索字符串相关, 但用原来的搜索字符串匹配不到的数据行也找出来.  
+
+
+要想对某个数据表进行全文搜索, 必须事先为它创建一个fulltext索引. 这种索引具有以下特点:  
+> (1) 全文搜索的基础是fulltext索引, 这种索引只能在MyISAM数据表创建. fulltext索引只能由char, varchar和text这几种类型的数据构成.  
+> (2) 全文索引将忽略"常见的"单词. 而"常见"在这里的含义是"至少在一半的数据行里出现过". 至少要在测试表里插入3个数据行. 如果那个数据表只有一个或两个数据行, 它里面的每个单词将至少有50%的出现几率, 所以对它进行全文搜索将不会有任何结果.  
+> (3) 全文搜索还将忽略一些常见单词, 如"the", "after"和"other"等. 这些单词被称为"休止单词", MySQL在进行全文搜索时总是会忽略他们.  
+> (4) 太短的单词也将被忽略. 在默认的情况下, "太短"指少于4个字符串, 可以通过重新配置服务器的办法把这个最小长度设置为其它值.  
+> (5) 全文搜索对"单词"的定义是, 由字母, 数字, 撇号(如 "it's" 中的 "'")和下划线字符构成的字符序列. 这意味着字符串"full-blood"将被解释为包含"full"和"blood"两个单词. 全文搜索匹配整个单词, 而不是单词的一部分.  
+> (6) fulltext索引可以为一个或多个数据列而创建. 如果它涉及多个数据列, 基于该索引的搜索将在所有数据列上同时进行. 反过来说, 在进行全文搜索时, 你给出的数据列清单必须和某个fulltext索引所匹配的那些数据列精确匹配. 比如说, 需要分别搜索col1, col2以及 "col1, col2", 需要创建3个索引: col1 和 col2 各有一个, "col1和col2"有一个.  
 
 
 
- 
+fulltext索引  
+```  
+create table tableName (
+  attribution varchar(40),
+  phrase text
+) engine = MyISAM;
+
+
+load data local infile 'demo.txt' into table tableName;
+
+alter table tableName  
+   add fulltext (attribution),
+   add fulltext (phrase),
+   add fulltext (phrase, attribution);   
+
+```  
+
+
+对它进行自然语言模式的全文搜索: 用match操作符列出被搜索的数据列, 用against()给出搜索字符串.  
+```  
+select * from tableName where match(attribution) against('roosevelt');
+select * from tableName where match(phrase) against('time');
+select * from tableName where match(phrase, attribution) against('bell'); 
+
+```  
+
+看某个搜索可以匹配多少行, 使用count(\*):  
+` select count(*) from tableName where match(phrase) against('time'); `  
+
+在where子句里使用match表达式时, 自然语言模式的全文搜索的输出数据行按照相关程度递减的顺序排序. 相关度以非负浮点数来表示, 0代表"毫不相关".  
+` select phrase, match(phrase) against('time') as relevance from tableName; `  
+
+查询多个单词:  
+` select * from tableName where match(phrase) against('hard soft'); `  
 
 
 
 
 
+全文搜索的布尔模式可以让我们控制多单词搜索操作中的许多细节. 要想进行这种模式的搜索, 需要在against()函数里在搜索字符串的后面加上 in boolean mode短语. 布尔模式特点:  
+> (1) "50规则"不再起作用, 即使是在超过一半的数据行里出现过的单词也可以被这种搜索匹配出来.  
+> (2) 查询结果不再按照相关度排序.  
+> (3) 在搜索一个短语时, 可以要求所有单词必须按照某种特定的顺序出现. 搜索一个短语, 需要把构成该短语的所有单词用双引号括起来; 如果数据行包含的单词按照给定的顺序排列, 才被认为是一个匹配.  
+` select * from tableName  where match(attribution, phrase) against('"bell book and candle"' in boolean mode); `  
+> (4) 布尔模式的全文搜索还可以在没被包括在fulltext索引里的数据列上进行, 但这要比搜索有fulltext索引的数据列慢很多.  
+
+
+布尔模式搜索时, 还可以给搜索字符串里的单词加上一些修饰符. 在单词的前面加上一个加号表示该单词必须出现在匹配数据行里, 而加上一个减号表示该单词不得出现在匹配数据行里. 
+字符串'+bell -candle'只匹配包含单词"bell", 不包含单词"candle"的数据行.  
+` select * from tableName where match(attribution, phrase) against('+bell -candle' in boolean mode); `  
+
+后缀的星号"\*"将被解释为一个通配符, 带星号后缀的搜索单词将匹配以它开头的所有单词. 比如'soft\*'将匹配"soft", "softly", "softness"等.  
+` select * from tableName where match(phrase) against'soft*' in boolean mode); `  
+在附录C里, 你可以在介绍match操作符的部分查到全部的布尔模式修饰符.  
+
+和自然语言模式的全文搜索情况相似, 布尔模式的全文搜索也将忽略所有的休止单词. 就算把它们标为"必须出现"也是如此.  
 
 
 
- 
 
+全文搜索的扩展模式将进行两个阶段的搜索, 第一遍搜索和普通的自然语言搜索一样, 在这次搜索里找到的相关度最高的数据行里的单词将被用在第二个阶段. 这些数据行里的单词加上原来那些搜索单词将被用来进行第二遍搜索. 因为搜索单词的集合变大了, 所以在最终结果里往往会多出一些在第一阶段没找到, 但与第一阶段的检索结果有一定关系的数据行.  
+
+
+进行这种搜索, 需要在搜索字符串后面加上with query expansion短语.  
+` select * from tableName where match(attribution, phrase) against('bell book' with query expansion); `
+
+
+
+为fulltext索引设置单词最小和最大长度的参数是ft_min_word_len和ft_max_word_len. 长度超出这两个参数所定义的范围的单词在创建fulltext索引时将被忽略. 默认的最小值和最大值分别是4个和84个字符串.  
+
+
+
+把最小单词长度从4改成3, 请按以下步骤进行.  
+> (1) 把 ft_min_word_len 变量设置为3, 重启服务器. 如果想让这个设置在服务器每次重启都能生效, 最好的办法是把这个设置放到某个选项文件里, 如 /etc/my.cnf文件:  
+
+```  
+[mysqld]
+ft_min_word_len=3
+
+```  
+> (2) 对于那些已经有fulltext索引的现有数据表, 必须重新建立那些索引. 可以先删除, 再重新创建. 但更简便且同样有效的办法是进行一次快速修复操作:  
+` repair table tableName quick; `  
+> (3) 在改变参数后创建的新fulltext索引将自动使用新值.  
+
+如果某个数据表有fulltext索引, 在使用myisamchk工具程序为该数据表重建索引的时候就必须注意一些与fulltext索引有关的事项.  
 
 
 
@@ -716,7 +1240,14 @@ select t1.*, t2.* from t1 inner join t2;
  
 
   
+  
 
+
+
+  
+
+
+ 
 
 
 
@@ -725,7 +1256,6 @@ select t1.*, t2.* from t1 inner join t2;
  
  
 
- 
 
 
 
@@ -733,13 +1263,30 @@ select t1.*, t2.* from t1 inner join t2;
 
 
 
-  
-  
-  
 
 
 
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
