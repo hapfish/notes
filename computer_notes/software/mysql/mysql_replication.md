@@ -32,6 +32,7 @@ MySQL复制大部分是向后兼容的, 新版本的服务器可以作为老版�
 
 
 ### 复制步骤 ###
+
 复制有三个步骤:  
 > (1) 在主库上把数据更改记录到二进制日志(Binary Log)中. (这些记录被称为二进制日志事件).  
 > (2) 备库将主库上的日志复制到自己的中继日志(Relay Log)中.  
@@ -58,6 +59,7 @@ MySQL 4.0之前的复制与之后的版本相比改变很大, 例如MySQL最初�
 ## 配置复制 ##
 
 ### 创建复制账号 ###
+
 备库I/O线程以该用户名连接到主库并读取其二进制日志.  
 ```  
 mysql> grant replication slave, replication client on *.* to replication@'192.168.1.%' identified by 'TestRep2016!';
@@ -70,6 +72,7 @@ mysql> select host,user from mysql.user;
 ### 配置主库和备库 ###
 
 #### 配置主库 ####
+
 需要打开二进制日志并指定一个独一无二的服务器ID(Server ID), 在主库的my.cnf文件中:  
 ```  
 $ sudo mkdir /var/lib/mysql-log
@@ -109,6 +112,7 @@ mysql>
 ```  
 
 #### 配置备库 ####
+
 备库也需要在my.cnf中增加配置
 ```  
 $ sudo vim /etc/my.cnf
@@ -127,7 +131,7 @@ $ sudo service mysqld status
 
 ```  
 
-** 启动复制 **  
+**启动复制**  
 
 使用change master to语句, 完全替代了my.cnf中相应的设置, 并允许以后指向别的主库无须重启备库.  
 
@@ -178,6 +182,7 @@ mysql> show processlist;
 ```  
 
 #### 验证复制效果 ####
+
 在主库上创建数据库
 ```  
 mysql> create database replication_test;
@@ -246,6 +251,7 @@ mysql>
 
 
 #### 推荐配置 ####
+
 InnoDB强烈推荐设置如下:  
 ```  
 innodb_flush_logs_at_trx_commit  # Flush every log write
@@ -284,7 +290,7 @@ sync_relay_log_info=1
 配置relay_log_space_limit变量, 如果中继日志的大小之和超过这个值, I/O线程会停止, 等待SQL线程释放磁盘空间. 可能导致这些日志在主库崩溃时丢失.  
 
 
-## 复制拓扑 ## 
+## 复制拓扑 ##
 
 可以在任意个主库和备库之间建立复制, 只有一个限制, 每一个备库只能有一个主库.  
 
@@ -299,7 +305,7 @@ sync_relay_log_info=1
 一主多备的结构和基本配置差不多简单. 因为备库之间根本没有交互, 它们仅仅是连接到同一个主库上.  
 在有少量写和大量读时, 这种配置是非常有用的.  
 
-### 主动-主动模式下的主-主复制 ###  
+### 主动-主动模式下的主-主复制 ###
 主-主复制(也叫双主复制或双向复制), 包含两台服务器, 每一台配制成对方的主库和备库. 它们是一对主库.  
 这种配置的最大问题是如何解决冲突, 两个可写的互主服务器导致的问题非常多. 这通常发生在两台服务器同时修改一行记录, 或同时在两台服务器上向一个包含auto_increment列的表里插入数据.  
 MySQL不支持多主库复制.  
