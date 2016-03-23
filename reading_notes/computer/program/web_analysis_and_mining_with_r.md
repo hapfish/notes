@@ -30,6 +30,211 @@ QQ邮箱:   568677413@qq.com
 
 # 第二章  R语言数据操作基础 #
 
+R涉及两个含义, 它即表示一种用于数据分析建模以及绘图的语言. 又指一个有着统计分析功能及强大作图功能的软件系统. R语言是由新西兰奥克兰大学的Ross Ihaka和Robert Gentleman共同创建的. 因为它们把该语言称为R. 该语言在GUN协议 General Public Licence 4免费发行, 现在由"R开发核心团队"负责开发. 由于R语言是由AT&T贝尔实验室所创的S语言发展出的一种语言, 因此, 通常情况下使用S语言编写的代码都可以不做任何修改地在R环境下运行.  
+
+R软件是一个免费的自由软件, 在R的安装程序中只包括8个基础模块. 其他扩展的算法包可以通过CRAN获得. 全球有超过100个CRAN镜像站.  
+
+新用户可以通过 [http://cran.r-project.org/mirrors.html](http://cran.r-project.org/mirrors.html) 浏览CRAN镜像站地址, 包含中国大陆地区的镜像地址.  
+这里使用[http://mirror.bjtu.edu.cn/cran/](http://mirror.bjtu.edu.cn/cran/)  
+
+getwd() 命令可以读取工作目录的路径.  
+setwd() 命令可以设置工作目录.  
+```  
+> setwd("C:/MyData/R")
+> getwd()
+[1] "C:/MyData/R"
+
+> setwd(paste(getwd(),"/demo1",sep=""))
+> getwd()
+[1] "C:/MyData/R/demo1"
+
+
+```  
+
+R采用的是UNIX路径规则, 对于Windows系统的用户来说, 如果在路径中使用了Windows常用的"/"作为目录层级间隔符, 则会出错.  
+
+可按上下方向键查看之前输入过的历史命令, 输入命令后, 按Enter键即可显示结果.  
+
+sink() 命令可以将所有后续的输出由终端转向一个外部文件.  
+```  
+> sink("C:/MyData/R/demo1/demo.txt")
+> getwd()
+> getwd()
+> sink()
+> getwd()
+[1] "C:/MyData/R/demo1"
+
+```  
+
+source 命令可批量执行命令脚本文件.  
+```  
+# demo1.r
+print("Current workdir is " )
+print(getwd())
+print("")
+print("Finish source command test!!! ")
+# print("完成source命令测试")
+
+
+```  
+source命令时, 中文有乱码.  
+```  
+> source("C:/MyData/R/demo1/demo1.r")
+[1] "Current workdir is "
+[1] "C:/MyData/R/demo1"
+[1] ""
+[1] "Finish source command test!!! "
+ 
+```
+
+运行R时, 所有变量, 数据, 函数及结果都是以对象(Object)的形式存在计算机的活动内存中. 此时内存中的所有对象数据称为工作空间数据. 可以用save.image()函数把工作空间数据转存于硬盘中.  
+` > save.image("C:/MyData/R/demo1/demo1.RData") `  
+
+一般在处理大数据挖掘项目时, 前期的数据处理最为耗时. 此时通常会把项目中有关数据处理的命令单独制成脚本(可命名为init.data.r). 并在脚本文件最后使用save.image()语句把数据存于硬盘.  
+在后续的数据分析脚本(可命名为sol.data.r), 可使用load()命令先载入数据处理脚本产生的对象数据. 这样, 在修整分析脚本时, 就不必再在数据处理阶段耗费时间了.  
+
+&lt;R软件安装目录&gt;/doc/html/index.html 是其帮助文件的存储路径, 可以使用 help.start() 命令打开.  
+```  
+> help.start()
+如果什么都不发生的话，你应该自己打开‘http://127.0.0.1:17185/doc/html/index.html’
+```  
+
+## R语言介绍 ##
+
+R是一种解释性语言, 而不是编译语言. 也就是说, 输入的命令能够直接执行.  
+
+R函数都存在一个库(library)中, 该库位于R软件的安装目录 /library 目录下. base包是R语言的核心包, 直接嵌于R软件安装包中, 它包含了数据读写, 操作最基本的函数.  
+
+R对大小写很敏感. 即Z和z的含义是不同的变量名, 同一字母的大写和小写分别代表不同的变量对象. 另外, R对象名称不能以数字开始.  
+
+R工作空间可存储变量和函数对象, 但是对于求值及打印命令, 并不会保存输出结果.  
+
+R语言的注释标识是以井号(#)开始, #后面所跟的都是注释, 直到此行结束为止.  
+
+使用 install.packages() 可以在命令行模式下安装包.  
+
+使用 library() 或者 require() 可以在命令行模式下将已经安装好的包加载至工作空间内.  
+
+
+从变量声明的角度区分, 数据类型可以分为静态类型和动态类型.  
+在编译期间就确定数据类型的语言, 叫静态类型语言. 该类语言要求在使用任一变量之前必须先声明其数据类型. 例如, Java和C就是静态类型语言.  
+在运行期间才确定数据类型的语言, 叫动态语言语言. 对于该类语言, 不必事先声明其数据类型, 而是通过第一次的赋值来定义其数据类型. R和Python为动态类型语言.  
+
+
+从不同数据类型是否可混合使用的角度来区分, 语言又可以分为弱类型语言和强类型语言.  
+在弱类型语言中, 不同数据类型间的数据可以混合使用. 例如, VBScript中, 可以将字符串'12'和整数3进行连接, 从而得到字符串'123'.  
+在强类型语言中则相反, 不同数据类型间的数据不可以混合使用. 必须通过类型转化函数处理后才可以. R和Python就是强类型语言.  
+
+
+## R数据类型 ##
+R的数据类型有 数值型, 字符型, 复数型 和 逻辑型 .  
+**数值(numeric)类型**的取值是实数, 在R环境中使用数字来表示.  
+```  
+> a<-9.111
+> mode(a)
+[1] "numeric"
+
+> a<-12345
+> mode(a)
+[1] "numeric"
+
+```  
+
+
+**字符(character)类型**的取值是字符串, 在R语言中, 字符串需要使用英文双引号括起来表示.  
+```  
+> a<-"abcd123"
+> mode(a)
+[1] "character"
+
+> a<-"Hello World!"
+> mode(a)
+[1] "character"
+
+```  
+
+
+**复数(complex)类型**的取值可扩展到虚数, 并使用&lt;实部数值&gt;+i&lt;虚部数值&gt;来表示.  
+如果有数平方是负数的话, 那个数就是虚数. 所有的虚数都是复数.  
+```  
+> a<-100+11i
+> mode(a)
+[1] "complex"
+
+> a<-10+123i
+> mode(a)
+[1] "complex"
+
+```  
+
+**逻辑(logical)类型**的取值为TRUE(也可以简写为T)和FALSE(也可以简写为F).  
+```  
+> a<-T
+> mode(a)
+[1] "logical"
+
+> a<-FALSE
+> mode(a)
+[1] "logical"
+
+```  
+
+有两种特殊情况不能使用上述4种数据类型来描述, 数据的缺失和数据的未知状态.  
+NA 表示数据集中的某数据缺失.  
+NULL 表示未知的状态.  
+
+
+最能说明NULL和NA区别的是, 当读取向量的长度时.  
+NULL不占据任何工作空间, length(c(1,2,3,NULL,4))的返回值为4.  
+而NA是占据工作空间的, length(c(1,2,3,NA,4))的返回值是5.  
+
+```  
+> length(c(1,2,3,NULL,4))
+[1] 4
+
+> length( c( 1, 2, 3, NULL, 4 ) )
+[1] 4
+
+
+> length(c(1,2,3,NA,4))
+[1] 5
+
+> length( c( 1, 2, 3, NA, 4) )
+[1] 5
+
+```  
+
+有时判断一个数据是否为NA或NULL, 这时可以使用is.na和is.null函数.  
+```  
+> a<-c( 1, 2, 3, NA, 4, NULL, 5)
+> is.na(a)
+[1] FALSE FALSE FALSE  TRUE FALSE FALSE
+> is.null(a)
+[1] FALSE
+
+```  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
 
   
 
