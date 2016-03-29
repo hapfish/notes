@@ -2299,6 +2299,407 @@ sub函数只对第一个匹配值进行替换, 想要全部替换可以使用gsu
 </table>
 
 
+## 常用数据的创建 ##
+
+使用**gl**函数可以方便地创建一个**因子向量**.  
+` gl(n, k, length = n * k, labels = 1:n , ordered = FALSE) `  
+
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>n</td>  <td>因子水平的数目</td>
+  </tr>
+  <tr>
+    <td>k</td>  <td>重复的次数</td>
+  </tr>
+  <tr>
+    <td>`n * k`</td>  <td>向量长度, 默认`n * k`</td>
+  </tr>
+  <tr>
+    <td>labels</td>  <td>因子水平的标签</td>
+  </tr>
+  <tr>
+    <td>ordered</td>  <td>如果为FALSE(默认), 则因子向量是无序因子. 如果为TRUE, 则因子向量是有序因子.</td>
+  </tr>
+  
+</table>
+
+```  
+> gl(3, 4, labels = c("v1", "v2", "v3")) 
+ [1] v1 v1 v1 v1 v2 v2 v2 v2 v3 v3 v3 v3
+Levels: v1 v2 v3
+
+> gl(3, 2, length = 12, labels = c("v1", "v2", "v3"))
+ [1] v1 v1 v2 v2 v3 v3 v1 v1 v2 v2 v3 v3
+Levels: v1 v2 v3
+
+```  
+
+
+**等差数列**产生函数**seq**, 可产生等距间隔的数列.  
+` seq(from = 1, to = 1, by = ( (to - from)/(length.out -1))) `  
+
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>from</td>  <td>等差数列的首项数据, 默认为1</td>
+  </tr>
+  <tr>
+    <td>to</td>  <td>等差数列的尾项数据, 默认为1</td>
+  </tr>
+  <tr>
+    <td>by</td>  <td>等差的数值</td>
+  </tr>
+  <tr>
+    <td>length.out</td>  <td>产生向量的长度</td>
+  </tr>
+  
+</table>
+
+
+```  
+> seq(1, -9)
+ [1]  1  0 -1 -2 -3 -4 -5 -6 -7 -8 -9
+
+> seq(1, -9, by = -2)
+[1]  1 -1 -3 -5 -7 -9
+
+> seq(1, by = 2, length.out = 10)
+ [1]  1  3  5  7  9 11 13 15 17 19
+
+```  
+
+在模拟实际数据情况时, 常常会使用随机抽样函数来从整体中挑出部分样本数据. 随机抽样又分为重复随机抽样和不重复随机抽样两种. 重复抽样是指, 本次从整体抽出的数据样本, 在下一次抽取时同样有机会被抽取. 不重复抽样就是, 一旦被抽取为样本, 下次就不能再被抽取了.  
+
+**sample**函数可以完成**随机抽样**处理.  
+` sample(x, size, replace = FALSE) `  
+
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>x</td>  <td>整体数据, 以向量形式给出</td>
+  </tr>
+  <tr>
+    <td>size</td>  <td>抽取样本的数目</td>
+  </tr>
+  <tr>
+    <td>replace</td>  <td>如果为F(默认值), 则是不重复抽样. 此时size不能大于x的长度. 如果为T, 则是重复抽样, 此时size允许大于x的长度.</td>
+  </tr>
+</table>
+
+
+```  
+> sample(c(201:220), size = 10)
+ [1] 203 216 207 204 217 220 201 212 215 214
+
+> sample(c(201:220), size = 25, replace = T)
+ [1] 204 213 213 208 219 216 218 211 220 204 206 206 206 216 208 216 209 212 202 210 216 203 210 212 215
+
+```  
+
+
+**rep**是**重复序列**函数, 其基本形式是rep(x, n). 其中, x是预重复的序列, 可以是任意数据类型的向量或数值. n是重复的次数.  
+
+```  
+> rep(1:9)
+[1] 1 2 3 4 5 6 7 8 9
+ 
+> rep(10:15, 4) 
+ [1] 10 11 12 13 14 15 10 11 12 13 14 15 10 11 12 13 14 15 10 11 12 13 14 15
+ 
+> rep(c("test1", "test2", "test3"), 3)
+[1] "test1" "test2" "test3" "test1" "test2" "test3" "test1" "test2" "test3"
+ 
+> rep(as.factor(c("因子1", "因子2", "因子3")), 3)
+[1] 因子1 因子2 因子3 因子1 因子2 因子3 因子1 因子2 因子3
+Levels: 因子1 因子2 因子3
+
+```  
+
+对于一个离散型变量X, 可以直接描述X取不同水平的概率值P{X}.  
+借用微积分的思想, 可以计算变量X小于等于数值x0时的概率值 P{X<=x0}. 把点(x0, P{X<=x0}}连续化, 进而形成一条曲线, 用函数F(x)来表达该曲线, 它的意义是连续变量X小于等于x时的概率. 我们称该函数F(x)是变量X的分布函数. `F(x) = P{X<=x}`  
+对F(x)做微分处理, 可以得到变量X的概率密度函数.  
+对F(x)取反函数, 得到分位数函数.  
+
+
+
+正态分布有两个参数, 平均值和方差, 其方差的平方根也称为标准差.  
+
+使用` pnorm(x, mean, sd) ` 函数来表达时, 其中的参数x就是连续变量x, 参数mean是平均值, 参数sd是标准差. 其初始默认取值 `mean=0, sd =1 ` .  
+概率密度函数使用 ` dnorm(x, mean, sd) ` 函数来表达.  
+正态分布随机数的产生函数使用 ` rnorm(n, mean, sd) ` 来表达, 其中n是产生的随机数数目.  
+
+```  
+> rnorm(10, 5, 2) 
+ [1]  3.8023551  4.1025205  8.0794033  6.2408178  4.6121950  7.0272276 11.2164345  5.0340282  1.8236069  0.7661015
+
+> r1<-rnorm(10, 5, 2) 
+> r1
+ [1] 5.685253 4.250892 7.123485 4.959627 4.282455 4.854974 2.714526 6.099787 4.221002 6.810436
+
+
+ 
+ > pnorm(r1, 5, 2)
+ [1] 0.6340604 0.3539960 0.8558237 0.4919473 0.3598826 0.4710969 0.1265739 0.7088037 0.3484535 0.8173250
+> pnorm(r1, 5, 1)
+ [1] 0.75340801 0.22689598 0.98314338 0.48389779 0.23651890 0.44234526 0.01114252 0.86428744 0.21799034 0.96488587
+ 
+> pnorm(c(1:5), 5, 1)
+[1] 3.167124e-05 1.349898e-03 2.275013e-02 1.586553e-01 5.000000e-01
+> pnorm(7, 5, 1)
+[1] 0.9772499
+
+
+
+> dnorm( r1, 5, 2)
+ [1] 0.1880999 0.1859586 0.1135248 0.1994305 0.1870378 0.1989474 0.1038290 0.1714820 0.1848999 0.1324175
+
+
+```  
+
+
+R语言中其他常用分布函数.  
+
+<table>
+  <tr>
+    <th>分布</th>  <th>在R中的名称</th>  <th>参数</th>
+  </tr>
+  
+  <tr>
+    <td>beta</td>  <td>beta</td>  <td>shape1, shape2, ncp</td>
+  </tr>
+  <tr>
+    <td>binomial</td>  <td>binom</td>  <td>size, prob</td>
+  </tr>
+  <tr>
+    <td>Cauchy</td>  <td>cauchy</td>  <td>location, scale</td>
+  </tr>
+  <tr>
+    <td>chi-squared</td>  <td>shisq</td>  <td>df, ncp</td>
+  </tr>
+  <tr>
+    <td>exponential</td>  <td>exp</td>  <td>rate</td>
+  </tr>
+  
+  <tr>
+    <td>F</td>  <td>f</td>  <td>df1, df2, ncp</td>
+  </tr>
+  <tr>
+    <td>gamma</td>  <td>gamma</td>  <td>shape, scale</td>
+  </tr>
+  <tr>
+    <td>geometric</td>  <td>geom</td>  <td>prob</td>
+  </tr>
+  <tr>
+    <td>hypergeometric</td>  <td>hyper</td>  <td>m ,n, k</td>
+  </tr>
+  <tr>
+    <td>log-normal</td>  <td>lnorm</td>  <td>meanlog, sdlog</td>
+  </tr>
+  
+  <tr>
+    <td>logistic</td>  <td>logis</td>  <td>location, scale</td>
+  </tr>
+  <tr>
+    <td>negative</td>  <td>binomial</td>  <td>nbinom size, prob</td>
+  </tr>
+  <tr>
+    <td>normal</td>  <td>norm</td>  <td>mean, sd</td>
+  </tr>
+  <tr>
+    <td>Poisson</td>  <td>pois</td>  <td>lambda</td>
+  </tr>
+  <tr>
+    <td>Student'st</td>  <td>t</td>  <td>df, ncp</td>
+  </tr>
+  
+  <tr>
+    <td>uniform</td>  <td>unif</td>  <td>min, max</td>
+  </tr>
+  <tr>
+    <td>Weibull</td>  <td>weibull</td>  <td>shape, scale</td>
+  </tr>
+  <tr>
+    <td>Wilcoxon</td>  <td>wilcox</td>  <td>m, n</td>
+  </tr>
+  
+</table>
+
+
+分布名称前添加前缀后可以代表不同的意义.  
+> (1) p&lt;R中的分布名称&gt; 表示该分布的分布函数. 例如, pnorm是正态分布的分布函数.  
+> (2) d&lt;R中的分布名称&gt; 表示该分布的概率密度函数, 例如, dnorm是正态分布的概率密度函数.  
+> (3) q&lt;R中的分布名称&gt; 表示该分布的分位数函数. 例如, qnorm是正态分布的分位数函数.  
+> (4) r&lt;R中的分布名称&gt; 表示该分布的随机序列产生函数. 例如, rnorm是正态分布的随机序列函数.  
+
+
+
+
+
+
+## 控制流 ##
+
+R包含所有串行语言都有的基本控制语句, 分支和循环.  
+
+### if else ###
+
+if-else分支  
+```  
+if(boolean) {
+  // do something
+} else {
+  // do something
+}
+
+
+if(boolean) {
+  // do something
+} else if(boolean) {
+  // do something
+} else {
+  // do something
+}  
+  
+# demo
+
+> v1<-5
+> if ( v1 < 10 ) {
++   v1<-10
++ } else {
++   v1<-100
++ }
+
+> v1
+[1] 10
+
+
+
+> v1<-5
+> if ( v1 < 4 ) { 
++   v1<-1
++ } else if(v1 < 10 & v1 >= 4) {
++   v1<-9
++ } else {
++   v1<-100
++ }
+> 
+> v1
+[1] 9
+
+
+
+```  
+通过if - else 语句可以组成多个分支判断语句, 如果处理语句中只包含一条语句, 则可以省略大括号{}.  
+
+
+
+### switch ###
+
+switch语句可以直接实现多分支语句, 但分支时并无判断的优先级区分.  
+` switch(case, case 1 处理, case 2 处理, ..., case n 处理) `  
+
+如果case对象等于n, 则执行第n条分支的case n处理. 如果case的取值大于list对象的长度, 则返回值是null.  
+```  
+> svalue<-3
+> switch(svalue, "value1", "value2", "value3", "value4")
+[1] "value3"
+> svalue2<-9
+> switch(svalue2, "value1", "value2", "value3", "value4")
+> 
+
+```  
+
+
+
+### for循环 ###
+
+在R语言中, 可以使用for, while以及repeat-break实现循环语句. 循环语句可以简单依据计数操作(当计数器达到了设定的循环次数时自动停止)或者某一向量来进行轮询.  
+
+```  
+
+> d1<-c(1, 1, 2, 3, 5, 7, 9, 11, 2, 4, 6)
+
+
+> f1<-1
+> rs1<-""
+> for(i in d1) {
++ rs1[f1]<-as.character(i)
++ f1<-f1 + 1
++ }
+> rs1
+ [1] "1"  "1"  "2"  "3"  "5"  "7"  "9"  "11" "2"  "4"  "6" 
+
+
+> f2<-1
+> rs2<-""
+> for(i in 1:length(d1)) {
++ rs2[f2]<-as.character(d1[i])
++ f2<-f2 + 1
++ }
+> 
+> rs2
+ [1] "1"  "1"  "2"  "3"  "5"  "7"  "9"  "11" "2"  "4"  "6" 
+
+ 
+ 
+```  
+
+
+### while循环 ###
+
+```  
+> d1<-c(1, 1, 2, 3, 5, 7, 9, 11, 2, 4, 6)
+> i<-1
+> wrs1<-""
+> while( i < length(d1) ) {
++   wrs1[i]<-as.character(d1[i])
++   i<-i + 1
++ }
+
+> wrs1
+ [1] "1"  "1"  "2"  "3"  "5"  "7"  "9"  "11" "2"  "4" 
+
+```  
+
+for实际上是通过遍历一个向量的方式来控制循环次数. while则是直接设置循环的范围. for的应用基本可以覆盖while. 笔者更加倾向于使用for循环语句.  
+
+
+
+
+
+### repeat break循环 ###
+
+repeat是无限循环语句, 并且会在达到循环条件后使用break语句直接跳出循环.  
+
+```  
+> d1<-c(1, 1, 2, 3, 5, 7, 9, 11, 2, 4, 6)
+> p1<-1
+> prs1<-""
+> repeat {
++   if( p1 > length(d1)) {
++     break;
++   } else {
++     prs1[p1]<-as.character(d1[p1])
++   } 
++   p1<-p1 + 1
++ }
+
+> prs1
+ [1] "1"  "1"  "2"  "3"  "5"  "7"  "9"  "11" "2"  "4"  "6" 
+
+
+```  
+
+R语言还提供了next语句, 执行后只会跳出本次循环, 而不会跳出整个循环.  
 
 
 
