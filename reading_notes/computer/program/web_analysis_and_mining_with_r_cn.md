@@ -1772,7 +1772,531 @@ na.omit 函数同样适用于数据框的缺失值处理, 使用 na.omit函数�
 ## 因子 ##
 
 
+在研究数据时, 一般可以把数据分为分类和数值两种属性.  
 
+<table>
+  <tr>
+    <th colspan="2">属性类型</th>  <th>描述</th>  <th>例子</th>  <th>R语言描述</th>
+  </tr>
+  
+  <tr>
+    <td rowspan="2">分类(定性)</td>  
+	<td>标称</td>  <td>标称属性的数值仅是不同的名称, 即标称值只提供区分对象的信息(可以进行等于或不等于比较)</td>  <td>用户ID</td>  <td>无序因子factor</td>
+  </tr>
+  <tr>
+    <td>序数</td>  <td>序数属性的值信息可以确定对象的序(可以进行大于或小于比较)</td>  <td>用户对商品的评分值</td>  <td>有序因子ordered</td>
+  </tr>
+  
+  <tr>
+    <td rowspan="2">数值(定量)</td>
+	<td>区间</td>  <td>对于区间属性, 值之间的差有意义, 即存在测量单位(可以进行加减)</td>  <td>日期</td>  <td rowspan="2">实数</td>
+  </tr>
+  <tr>
+    <td>比率</td>  <td>比率变量, 差和比率均有意义(可以进行乘除)</td>  <td>页面浏览量</td>  
+  </tr>
+  
+</table>
+
+
+factor函数可以把向量编码为一个因子.  
+` factor(x, levels = sort( unique(x), na.last = TRUE ), labels, exclude = NA, ordered = FALSE) `  
+
+参数说明
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>x</td>  <td>向量</td>
+  </tr>
+  <tr>
+    <td>levels</td>  <td>是因子的水平, 如果不指定值, 则由向量x内不同的值确定.</td>
+  </tr>
+  <tr>
+    <td>labels</td>  <td>是水平标签, 如果不指定值, 则由向量x内不同的值所对应的字符串确定.</td>
+  </tr>
+  <tr>
+    <td>exclude</td>  <td>在转化时, 如果想把向量内某些取值的元素转化为缺失值NA, 则设置该参数</td>
+  </tr>
+  <tr>
+    <td>ordered</td>  <td>如果取FALSE(默认取值), 则转化后是无序因子; 如果取TRUE, 则转化后是有序因子.</td>
+  </tr>
+  
+</table>
+
+
+```  
+> f1<-factor(c(1:9))
+> f1
+[1] 1 2 3 4 5 6 7 8 9
+Levels: 1 2 3 4 5 6 7 8 9
+
+
+> f2<-factor(c(1:9), exclude = c(2, 6, 8), ordered = TRUE)
+> f2
+[1] 1    <NA> 3    4    5    <NA> 7    <NA> 9   
+Levels: 1 < 3 < 4 < 5 < 7 < 9
+
+
+```  
+
+
+
+
+使用as.factor把一个向量转化为无序因子向量.  
+
+```  
+> fc<-as.factor( c(101:106) )
+> fc
+[1] 101 102 103 104 105 106
+Levels: 101 102 103 104 105 106
+
+> fc[1] == fc[2]
+[1] FALSE
+
+> fc[1] > fc[2]
+[1] NA
+Warning message:
+In Ops.factor(fc[1], fc[2]) : ‘>’ not meaningful for factors
+
+
+```  
+
+使用as.factor转化的无序因子不能进行大于小于比较, 只能进行等于和不等于比较.  
+
+使用as.ordered转化的有序因子可以进行大于, 小于的比较操作.  
+```  
+> o1<-as.ordered( c(101:106) )
+> o1
+[1] 101 102 103 104 105 106
+Levels: 101 < 102 < 103 < 104 < 105 < 106
+
+> o<-as.ordered( c("v1", "v2", "v3", "v4", "v5") )
+> o
+[1] v1 v2 v3 v4 v5
+Levels: v1 < v2 < v3 < v4 < v5
+
+> o2<-as.ordered( c("v1", "v2", "v3", "v4", "v5", "v6") )
+> o2
+[1] v1 v2 v3 v4 v5 v6
+Levels: v1 < v2 < v3 < v4 < v5 < v6
+
+> o2[1] == o2[2]
+[1] FALSE
+> o2[1] > o2[2]
+[1] FALSE
+
+
+```  
+
+is.factor函数用于判断向量是否为无序因子, is.ordered函数用于判断向量是否为有序因子.  
+```  
+> f1<-as.factor( c(201:206) )
+> o1<-as.ordered( c(201:206) )
+
+> is.factor(f1)
+[1] TRUE
+> is.ordered(f1)
+[1] FALSE
+
+> is.factor(o1)
+[1] TRUE
+> is.ordered(o1)
+[1] TRUE
+
+```  
+
+levels(&lt;因子向量&gt;) 以向量的形式读取因子水平对应的字符串, 同时可以直接编辑修改.  
+```  
+> fc1<-factor( c(201:206) )
+> fc1
+[1] 201 202 203 204 205 206
+Levels: 201 202 203 204 205 206
+> levels(fc1)
+[1] "201" "202" "203" "204" "205" "206"
+
+
+> levels(fc1)[1]<-"one"
+> fc1
+[1] one 202 203 204 205 206
+Levels: one 202 203 204 205 206
+
+
+> levels(fc1)<- c("lv1", "lv2", "lv3", "lv4", "lv5", "lv6")
+> fc1
+[1] lv1 lv2 lv3 lv4 lv5 lv6
+Levels: lv1 lv2 lv3 lv4 lv5 lv6
+
+
+```  
+
+对于初学者来说, 一个常见的错误就是为某一个因子元素赋予了水平中没有的数值.  
+
+```  
+> fc1[1]<-"a"
+Warning message:
+In `[<-.factor`(`*tmp*`, 1, value = "a") :
+  invalid factor level, NA generated
+
+> fc1[1]<-"lv4"
+> fc1
+[1] lv4 lv2 lv3 lv4 lv5 lv6
+Levels: lv1 lv2 lv3 lv4 lv5 lv6
+
+```  
+
+
+cut函数可以把数值类型, 依据间隔区间分段, 并返回一个因子序列.  
+```  
+> t<-c(10, 11, 12, 9, 8, 7, 6, 5, 10, 20, 30, 40, 21, 22, 23, 25)
+
+> tc<-cut(t, breaks = c(0, 5, 10, 20, 30))
+> tc
+ [1] (5,10]  (10,20] (10,20] (5,10]  (5,10]  (5,10]  (5,10]  (0,5]   (5,10]  (10,20] (20,30] <NA>    (20,30] (20,30] (20,30] (20,30]
+Levels: (0,5] (5,10] (10,20] (20,30]
+
+
+> tc[1] <tc[2]
+[1] NA
+Warning message:
+In Ops.factor(tc[1], tc[2]) : ‘<’ not meaningful for factors
+
+
+> tc1<-cut(t, breaks = c(0, 5, 10, 20, 30), ordered_result = T )
+> tc1[1] > tc1[2]
+[1] FALSE
+
+
+
+```  
+
+cut分割区间返回了无大小意义的因子向量, 在比较两个元素时, 返回了错误提示.  设置 ordered_result参数为T后, 返回的因子向量具有了大小意义.  
+
+通过labels参数, 可以设置返回的因子向量的水平值.  
+```  
+> t<-c(10, 11, 12, 9, 8, 7, 6, 5, 10, 20, 30, 40, 21, 22, 23, 25)
+
+> tc2
+ [1] 2    3    3    2    2    2    2    1    2    3    4    <NA> 4    4    4    4   
+Levels: 1 2 3 4
+
+```  
+
+
+
+## 字符串 ##
+
+length(&lt;向量&gt;) 可以读取向量内的数目, 但无法读取一个字符串的实际长度. 这时需要用到nchar函数, 通过该函数可以读取字符串内部的字符数目.  
+```  
+> nchar("value test")
+[1] 10
+> nchar("8点45分")
+[1] 5
+
+```  
+
+paste函数用于合并字符串, 基本形式为 paste(&lt;字符串&gt; ... , sep = "").  
+
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>&lt;字符串&gt; ...</td>  <td>字符串或者字符串对象</td>
+  </tr>
+  <tr>
+    <td>sep</td>  <td>链接多个字符串, 中间的间隔符, 默认为空格.</td>
+  </tr>
+</table>   
+
+```  
+> s1<-paste("今天天气", "晴", "18摄氏度", "微风", sep = "")
+> s1
+[1] "今天天气晴18摄氏度微风"
+
+> s2<-paste("今天天气", "晴", "18摄氏度", "微风", sep = " -> ")
+> s2
+[1] "今天天气 -> 晴 -> 18摄氏度 -> 微风"
+
+```  
+
+strsplit函数可依据特定字符串把字符串分割为列表, 其中用于分割的字符串将不再出现.  
+```  
+> sd<-"今天是: 2016-03-01 时间 12:30:45"
+> s1<-strsplit(sd, split = ":")
+> s1
+[[1]]
+[1] "今天是"              " 2016-03-01 时间 12" "30"                  "45"                 
+
+
+> slist<-unlist(s1)
+> slist
+[1] "今天是"              " 2016-03-01 时间 12" "30"                  "45"                 
+> slist[1]
+[1] "今天是"
+> slist[2]
+[1] " 2016-03-01 时间 12"
+
+
+```  
+
+笔者通常使用 unlist(strsplit(&lt;字符串&gt;, split = &lt;分割符&gt;)) 函数. 并依据分割符来把一个字符串分割为多个字符串的向量.  
+
+
+substr函数可以直接读取/替换字符串中的一段子字符串.  
+` substr(x, start, stop) `  
+
+substr函数说明.  
+
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>x</td>  <td>字符串或者字符串对象</td>
+  </tr>
+  <tr>
+    <td>start</td>  <td>预读取/替换字符串的第一个下标</td>
+  </tr>
+  <tr>
+    <td>stop</td>  <td>预读取/替换字符串的最后一个下标</td>
+  </tr>
+</table>
+
+
+```  
+> s1<-"Hello World!"
+> s1
+[1] "Hello World!"
+> substr(s1, 2, 4)
+[1] "ell"
+
+
+> substr("今天是星期一, 天气晴朗", 3 , 6)
+[1] "是星期一"
+
+
+> substr(s1, 2, 4) <-"test"
+> s1
+[1] "Hteso World!"
+
+> substr(s1, 2, 4) <- "ok?"
+> s1
+[1] "Hok?o World!"
+
+```  
+
+
+grep(pattern, x)函数可以在字符型列表(参数x)中找出和特定字符串(参数pattern)匹配的序列编号. 如果不匹配, 返回integer(0), 其长度 length(grep(pattern, x))==0. 其中pattern可以是字符串, 也可以是一个正则表达式.  
+
+```  
+> slist<-list("CURL value1.html HTTP/1.0", "Curl value2.htm HTTP/2.0")
+> slist
+[[1]]
+[1] "CURL value1.html HTTP/1.0"
+
+[[2]]
+[1] "Curl value2.htm HTTP/2.0"
+
+> g1<-grep(".html", slist)
+> g1
+[1] 1
+
+> g2<-grep("test", slist)
+> g2
+integer(0)
+
+> g3<-grep("value", slist)
+> g3
+[1] 1 2
+
+
+```  
+
+
+如果a不是字符型列表, 而是一个字符串, 则grep可用于判别该字符串中是否包含特定的字符串. 如果包含, 则返回1. 不包含则返回integer(0).  
+```  
+> s1<-"CURL value1.html result 512KB bytes"
+> g1<-grep(".html", s1)
+> g1
+[1] 1
+
+> g2<-grep("test", s1)
+> g2
+integer(0)
+
+```  
+
+
+regexpr(pattern, text) 函数可以在字符串x中提取出特定的字符串pattern的相关信息. 其中pattern可以是字符串, 也可以是一个正则表达式.  
+
+```  
+> s1<-"curl value1.html return 512kb bytes"
+
+> r1<-regexpr("value", s1)
+> r1
+[1] 6
+attr(,"match.length")
+[1] 5
+attr(,"useBytes")
+[1] TRUE
+
+```  
+
+regexpr() 函数只匹配第一个特定的字符, 想要多次匹配需要使用gregexpr()函数.  
+
+```  
+> s1<-"curl value1.html return 512kb bytes, curl value2.html return 1024kb bytes"
+
+> g1<-gregexpr("value", s1)
+> g1
+[[1]]
+[1]  6 43
+attr(,"match.length")
+[1] 5 5
+attr(,"useBytes")
+[1] TRUE
+
+```  
+
+
+
+chartr() 函数可以直接进行字符的替换, 其查询的规则将以被替换字符串的形式给出.  
+` chartr(old, new, x) `  
+
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>x</td>  <td>字符串或字符串对象</td>
+  </tr>
+  <tr>
+    <td>old</td>  <td>预被替换的x中的旧字符串集合. 如果x字符串中不包括old字符串集合, 则函数仍返回x字符串. 不做任何处理.</td>
+  </tr>
+  <tr>
+    <td>new</td>  <td>替换处理后, 新补充的字符串集合. 长度必须大于等于旧字符串集合.</td>
+  </tr>
+</table>
+
+
+```  
+> s1<-"Test Hello World!"
+
+> c1<-chartr("va", "kk", s1)
+> c1
+[1] "Test Hello World!"
+
+
+> c2<-chartr("lo", "k", s1)
+Error in chartr("lo", "k", s1) : 'old'比'new'要长
+
+> c3<-chartr("lo", "ab", s1)
+> c3
+[1] "Test Heaab Wbrad!"
+
+> c4<-chartr("lo", "abc", s1)
+> c4
+[1] "Test Heaab Wbrad!"
+
+```  
+
+对应每个字符都替换了, 不是在字符串中截取并替换.  
+
+
+
+chartr()替换的单位是字符, sub()或gsub()函数的替换单位则是字符串. sub函数基本形式:  
+` sub(pattern, replacement, x) `  
+
+
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>pattern</td>  <td>欲被替代的字符串, 可以使用正则表达式</td>
+  </tr>
+  <tr>
+    <td>replacement</td>  <td>替代后的字符串</td>
+  </tr>
+  <tr>
+    <td>x</td>  <td>原始字符串</td>
+  </tr>
+  
+</table> 
+
+
+```  
+> s1<-"curl value1.html return 512kb bytes, curl value2.html return 1024kb bytes"
+
+> sub1<-sub("value", "数据", s1)
+> sub1
+[1] "curl 数据1.html return 512kb bytes, curl value2.html return 1024kb bytes"
+
+> sub2<-sub("value", "data", s1)
+> sub2
+[1] "curl data1.html return 512kb bytes, curl value2.html return 1024kb bytes"
+
+
+```  
+
+sub函数只对第一个匹配值进行替换, 想要全部替换可以使用gsub函数.  
+
+```  
+> s1<-"curl value1.html return 512kb bytes, curl value2.html return 1024kb bytes"
+
+> g1<-gsub("value", "search", s1)
+> g1
+[1] "curl search1.html return 512kb bytes, curl search2.html return 1024kb bytes"
+
+```  
+
+
+**正则表达式**  
+
+[] 表示字符集合  
+
+[aeiou]  匹配任何一个英文元音字母  
+[0-9]  匹配任意一个数字, 0到9  
+[a-z]  匹配任意一个小写英文字母  
+[A-Z]  匹配任意一个大写英文字母  
+[a-z0-9A-Z_]  匹配任意一个字母, 数字或下划线  
+
+小数点(.)或者逗号(,) 需要使用 `\\` 来取消这些字符的特殊意义.  使用`\\.`来匹配`.`.  
+
+
+在正则表达式中可以使用限定符来指定数量.  
+
+<table>
+  <tr>
+    <th>代码/语法</th>  <th>说明</th>	
+  </tr>
+  
+  <tr>
+    <td>*</td>  <td>重复0次或更多次</td>
+  </tr>
+  <tr>
+    <td>+</td>  <td>重复一次或更多次</td>
+  </tr>
+  <tr>
+    <td>?</td>  <td>重复0次或1次</td>
+  </tr>
+  <tr>
+    <td>{n}</td>  <td>重复n次</td>
+  </tr>
+  <tr>
+    <td>{n,}</td>  <td>重复n次或更多次</td>
+  </tr>
+  <tr>
+    <td>{n,m}</td>  <td>重复n ~ m次</td>
+  </tr>
+  
+</table>
 
 
 
