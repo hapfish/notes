@@ -2632,8 +2632,8 @@ switch语句可以直接实现多分支语句, 但分支时并无判断的优先
 > f1<-1
 > rs1<-""
 > for(i in d1) {
-+ rs1[f1]<-as.character(i)
-+ f1<-f1 + 1
++   rs1[f1]<-as.character(i)
++   f1<-f1 + 1
 + }
 > rs1
  [1] "1"  "1"  "2"  "3"  "5"  "7"  "9"  "11" "2"  "4"  "6" 
@@ -2642,8 +2642,8 @@ switch语句可以直接实现多分支语句, 但分支时并无判断的优先
 > f2<-1
 > rs2<-""
 > for(i in 1:length(d1)) {
-+ rs2[f2]<-as.character(d1[i])
-+ f2<-f2 + 1
++   rs2[f2]<-as.character(d1[i])
++   f2<-f2 + 1
 + }
 > 
 > rs2
@@ -2702,11 +2702,454 @@ repeat是无限循环语句, 并且会在达到循环条件后使用break语句�
 R语言还提供了next语句, 执行后只会跳出本次循环, 而不会跳出整个循环.  
 
 
+## 运算符, 函数, 过程 ##
 
+算术运算符  
+
+<table>
+  <tr>
+    <th>运算符</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>` + `</td>  <td>加</td>
+  </tr>
+  <tr>
+    <td>` - `</td>  <td>减</td>
+  </tr>
+  <tr>
+    <td>` * `</td>  <td>乘</td>
+  </tr>
+  <tr>
+    <td>` / `</td>  <td>除</td>
+  </tr>
+  
+  <tr>
+    <td>` ^ `或` ** `</td>  <td>幂运算</td>
+  </tr>
+  <tr>
+    <td>` x %% y `</td>  <td>求除法运算得到的余数, 如 10 %% 3 结果为1</td>
+  </tr>
+  <tr>
+    <td>` x %/% y `</td>  <td>整数除法, 例如 10 %/% 3 结果为3 </td>
+  </tr>
+  
+</table>
+
+
+逻辑运算符  
+
+<table>
+  <tr>
+    <th>运算符</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>` < `</td>  <td>小于</td>
+  </tr>
+  <tr>
+    <td>` <= `</td>  <td>小于等于</td>
+  </tr>
+  <tr>
+    <td>` > `</td>  <td>大于</td>
+  </tr>
+  <tr>
+    <td>` >= `</td>  <td>大于等于</td>
+  </tr>
+  <tr>
+    <td>` == `</td>  <td>等于</td>
+  </tr>
+  
+  <tr>
+    <td>` != `</td>  <td>不等于</td>
+  </tr>
+  <tr>
+    <td>` !x `</td>  <td>非x</td>
+  </tr>
+  <tr>
+    <td>` x | y `</td>  <td>x或y(并集)</td>
+  </tr>
+  <tr>
+    <td>` x & y `</td>  <td>x和y(交集)</td>
+  </tr>
+  <tr>
+    <td>` isTRUE(x) `</td>  <td>测试x是否为TRUE</td>
+  </tr>
+  
+</table>
+
+
+自定义函数的格式如下:  
+` func.name<-function(arg_1, arg_2, ...) expression `  
+
+其中func.name为函数的名称, arg_1和arg_2是函数的输入参数. expression是R语言的表达式, 在定义函数时, 可以为某些参数直接设置初始值. 在定义好函数后, 可以使用 func.name(arg_1 = value1, arg_2 = value2, ...)来调用函数. 已经设置好了参数的初始值, 则在调用时可以不为参数设置数值.  
+
+```  
+> demo.func<-function( x1, x2 = 0) {
++   if( (x1 + x2) > 100 ) {  
++     rlt = x1 + x2 + 100
++   } else if ( (x1 + x2) >= -90 ) {
++     rlt = x1 + x2
++   } else {
++     rlt <- NA 
++   }
++   rlt
++ }
+
+
+> demo.func(1, 5)
+[1] 6
+> demo.func(x1 = 50, x2 = 51)
+[1] 201
+> demo.func(x1 = -31, x2 = -60)
+[1] NA
+
+```  
+
+在函数内部定义的数据对象(包括以参数形式定义的数据对象) 均为局部变量, 因此不会改变函数外部同名对象的数值.  
+
+
+过程和函数类型, 只是函数内部的对象是局部变量, 而过程内部对象的赋值均是全局性操作. 另外在表现形式上, 过程和函数有很大的区别. 由于过程内部全部是全局变量操作, 所以输入参数和返回值对于过程而言没有任何意义. 即过程无输入参数的概念, 也无返回值的概念. 只有函数才有.  
+
+使用 expression 函数定义一个过程.  
+
+```  
+> demo.ex<-expression (
++   if( m > 0 & n > 0 ) {
++     m<- m + n
++     n<-1
++   } else if ( m > 0 & n < 0 ) {
++     m<- m - n
++     n<-2
++   } else if ( m < 0 & n > 0 ) {
++     m<- n - m
++     n<-3
++   } else if ( m < 0 & n < 0 ) {
++     m< - m - n
++     n<-4
++   } else {
++     m<--1
++     n<-0
++   }
++ )
+> 
+> ls()
+[1] "demo.ex"
+
+
+> eval(demo.ex)
+Error in eval(expr, envir, enclos) : 找不到对象'm'
+
+
+> m<-5
+> n<-15
+> 
+> eval(demo.ex)
+> m
+[1] 20
+> n
+[1] 1
+
+
+```  
+
+ 
+## 数据的读写操作 ##
+
+
+read.table 函数可以读取外部数据至一个数据框对象中.  
+` read.table(file, header = FALSE, sep = "", encoding = "unknown", ...) `  
+
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>file</td>  <td>file是一个字符串, 代表读取的数据文件.</td>
+  </tr>
+  <tr>
+    <td>header</td>  <td>如果为FALSE(默认取值), 则不把数据文件的第一行作为列名处理; 如果为TRUE, 则把数据文件的第一行作为列名称处理.</td>
+  </tr>
+  <tr>
+    <td>sep</td>   <td>设置用于区分不同列的分隔符, 默认为空格, 对制表符分隔的文件使用 sep = "\t".</td>
+  </tr>
+  <tr>
+    <td>encoding</td>  <td>编码, 为防止中文乱码, 可以设置 encoding = "UTF-8".</td>
+  </tr>
+  <tr>
+    <td>as.is</td>  <td>用于设置是否把字符类型的列数据(未转化为实数复数和逻辑类型)转化为因子形式, 默认是FALSE, 即全部转化为因子. 如果设置为T, 则所有字符型列数据均不转化为因子. 另外, 还可以设置不需要转化的列序号.</td>
+  </tr>
+  
+  <tr>
+    <td>row.names</td>  <td>保存行名的向量, 或文件中一个变量的序号或名称, 缺失时行号取为 1, 2, 3, ...</td>
+  </tr>
+  <tr>
+    <td>col.names</td>  <td>指定列名的字符型向量, 缺失值是 V1, V2, V3, ...</td> 
+  </tr>
+  <tr>
+    <td>na.strings</td>  <td>代表缺失值的处理. (转化为NA)</td>
+  </tr>
+  <tr>
+    <td>nrows</td>  <td>可以读取的最大行数. (忽略负值)</td>
+  </tr>
+  <tr>
+    <td>skip</td>  <td>略过不读取前n行数据</td>
+  </tr>
+  
+  <tr>
+    <td>skip.white</td>  <td>在sep已指定的情况下, 如果为TRUE, 则删除字符型变量前后多余的空格.</td>
+  </tr>
+  <tr>
+    <td>blank.lines.skip</td>  <td>如果为TRUE, 则忽略空白行</td>
+  </tr>
+  
+</table>
+
+
+```  
+# demo file
+id date time info
+1001 2016-03-01 11:33:44 "curl value1.html return 512kb bytes"
+1003 2016-03-02 13:34:45 "curl value2.html return false"
+1004 2016-03-01 14:45:56 "post a form"
+
+
+# read file 
+> file1<-"c:/MyData/R/demo1/file/read_table.txt"
+
+> read_table1<-read.table(file1, header = TRUE)
+
+> read_table1
+    id       date     time                                info
+1 1001 2016-03-01 11:33:44 curl value1.html return 512kb bytes
+2 1003 2016-03-02 13:34:45       curl value2.html return false
+3 1004 2016-03-01 14:45:56                         post a form
+
+> mode(read_table1)
+[1] "list"
+
+```  
+
+
+
+当文件内的数据是固定宽度时, 可以使用函数 read.fwf 来读取.  
+` read.fwf(file, widths, sep = "\t", as.is = FALSE, ...) `  
+
+read.fwf函数的参数与read.table类似, 只是read.fwf函数还有一个特殊的 widths 参数用于设定不同列的宽度.  
+
+```  
+# read.fwf demo file
+1001 2016-03-01 01:00:00 POST 200
+1002 2016-03-01 02:00:00 POST 201
+1003 2016-03-02 02:00:00 POST 200
+
+
+
+> file2<-"C:/MyData/R/demo1/file/read_fwf.txt"
+
+> read_fwf1<-read.fwf(file2, widths=c(5, 11, 9, 5, 3))
+
+> read_fwf1
+    V1          V2        V3    V4  V5
+1 1001 2016-03-01  01:00:00  POST  200
+2 1002 2016-03-01  02:00:00  POST  201
+3 1003 2016-03-02  02:00:00  POST  200
+
+> mode(read_fwf1)
+[1] "list"
+
+
+```  
+
+
+scan函数读取外部文件时有如下特点:  
+> (1) scan函数可以指定输出变量的数据类型.  
+> (2) 输出对象的类型更灵活, 可以是数据框, 向量, 矩阵, 列表.  
+> (3) 对于很大的数据文件, 使用scan函数时读取速度会更快, 因为它可以事先设定数据类型, 而不是在读取完毕后再检查数据类型的一致性.  
+
+scan参数说明  
+
+<table>
+  <tr>
+    <td>参数</td>  <td>说明</td>
+  </tr>
+  
+  <tr>
+    <td>file</td>  <td>字符串, 文件位置</td>
+  </tr>
+  <tr>
+    <td>what</td>  <td>在读取后, 用于说明各列数据的类型, 可使用logical, integer, numeric, complex, character, raw和list等函数</td>
+  </tr>
+  <tr>
+    <td>sep</td>  <td>分隔符, 默认为空格</td>
+  </tr>
+  <tr>
+    <td>skip</td>  <td>略过不读取前n行数据.</td>
+  </tr>
+  <tr>
+    <td>nlines</td>  <td>要读取的行数</td>
+  </tr>
+  
+  <tr>
+    <td>encoding</td>  <td>编码, 防止中文乱码, 可设置 encoding = "UTF-8"</td>
+  </tr>
+  <tr>
+    <td>na.strings</td>  <td>代表缺失数据的值.(转化为NA)</td>
+  </tr>
+  
+</table>
+
+
+```  
+# scan demo file
+@a001: 学习R语言 @b002 +1 @c003 分享 
+
+R语言学习教程
 
 
 
  
+> file3<-"C:/MyData/R/demo1/file/scan.txt"
+
+> scan_data<-scan(file3, what = "character", sep = "@", encoding = "UTF-8")
+Read 7 items
+
+> scan_data
+[1] "# scan "          ""                 "a001: 学习R语言 " "b002 +1 "         "c003 分享 "       "R语言学习教程"    " "               
+
+> mode(scan_data)
+[1] "character"
+
+
+```  
+
+
+
+CSV(逗号分隔)文件是较为常用的数据文件格式, 通过 read.csv函数可以读取CSV文件并返回一个数据框对象.  
+
+
+ 
+```  
+# 准备一个CSV文件
+
+
+> file4<-"C:/MyData/R/demo1/file/read_csv.csv"
+
+> data_csv<-read.csv(file4)
+
+> data_csv
+  序列号     日期     时间      反馈
+1   1001 2016/3/1 10:22:33      Good
+2   1002 2016/3/2 12:34:45      不错
+3   1003 2016/3/1  9:05:56 Very Good
+
+> mode(data_csv)
+[1] "list"
+
+
+```  
+
+
+使用RODBC包可以读取Excel格式文件, 其核心函数分别是odbcConnectExcel和sqlFetch.  
+
+```  
+> setwd("C:/MyData/R/demo1")
+> getwd()
+[1] "C:/MyData/R/demo1"
+
+> .libPaths()
+[1] "C:/Program Files/R/R-3.2.4revised/library"
+
+# window 10下, 需要使用管理员身份运行R
+> install.packages("RODBC")
+
+> library(RODBC)
+
+> file4<-"C:/MyData/R/demo1/file/read_excel.xls"
+> excel_file<-odbcConnectExcel(file4)
+> excel_sheet1<-sqlFetch(excel_file, "read_csv")
+
+> excel_sheet1
+  序列号       日期                时间      反馈
+1   1001 2016-03-01 1899-12-30 10:22:33      Good
+2   1002 2016-03-02 1899-12-30 12:34:45      不错
+3   1003 2016-03-01 1899-12-30 09:05:56 Very Good
+> 
+> mode(excel_sheet1)
+[1] "list"
+
+# 需要在32位环境下使用 odbcConnectExcel, 只能读取.xls文件, 不能读取.xlsx文件
+
+
+> excel_file<-odbcConnectExcel(file4)
+Error in odbcConnectExcel(file4) : 
+  odbcConnectExcel is only usable with 32-bit Windows
+
+  
+```  
+
+
+
+对于向量和矩阵的输出, 一般使用write函数写入某一文件中.  
+` write(x, file, append = FALSE) `  
+
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>x</td>  <td>数据源, 一般是向量或矩阵类型的数据对象.</td>
+  </tr>
+  <tr>
+    <td>file</td>  <td>输出的文件</td>
+  </tr>
+  <tr>
+    <td>append</td>  <td>如果是FALSE(默认的值), 则清空file文件内的原有数据, 再写入x的内容. 如果是TRUE, 则在file文件原有内容的基础上追加写入x的内容.</td>
+  </tr>
+  
+  
+</table>
+
+
+对于列表或数据框类型对象, 建议使用write.table写入文本文件中, 或者使用write.csv写入csv文件中. 基本参数与write类似.  
+
+```  
+> c1<-c(201:210)
+> m1<-matrix(1:12, c(3,4))
+> df1<-data.frame(m1)
+
+
+> write(c1, "C:/MyData/R/demo1/output/c1.txt")
+
+> write(m1, "C:/MyData/R/demo1/output/m1.txt")
+
+> write(df1, "C:/MyData/R/demo1/output/df1.txt")
+Error in cat(list(...), file, sep, fill, labels, append) : 
+  cat目前还不能处理1(种类为'list')参数
+  
+> write.table(df1, "C:/MyData/R/demo1/output/table_df1.txt")
+
+> write.csv(df1, "C:/MyData/R/demo1/output/csv_df1.txt")
+
+> write.csv(df1, "C:/MyData/R/demo1/output/csv_df1.csv")
+
+
+```  
+
+
+
+cat函数可以把R语言命令输出至一个外部文件, 然后通过source函数运行该批处理文件.  
+` cat(..., file = "", sep = "", append = FALSE) `  
+
+其中, ...是预输出的命令, 其他参数可以参考write函数的说明.  
+
+
+
+
+
+
 
  
 
