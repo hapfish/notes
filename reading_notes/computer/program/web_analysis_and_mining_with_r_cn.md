@@ -2718,14 +2718,14 @@ R语言还提供了next语句, 执行后只会跳出本次循环, 而不会跳�
     <td> - </td>  <td>减</td>
   </tr>
   <tr>
-    <td> \* </td>  <td>乘</td>
+    <td> * </td>  <td>乘</td>
   </tr>
   <tr>
     <td> / </td>  <td>除</td>
   </tr>
   
   <tr>
-    <td> ^ 或 \*\* </td>  <td>幂运算</td>
+    <td> ^ 或 ** </td>  <td>幂运算</td>
   </tr>
   <tr>
     <td> x %% y </td>  <td>求除法运算得到的余数, 如 10 %% 3 结果为1</td>
@@ -2745,13 +2745,13 @@ R语言还提供了next语句, 执行后只会跳出本次循环, 而不会跳�
   </tr>
   
   <tr>
-    <td> &lt; </td>  <td>小于</td>
+    <td> < </td>  <td>小于</td>
   </tr>
   <tr>
     <td> <= </td>  <td>小于等于</td>
   </tr>
   <tr>
-    <td> &gt; </td>  <td>大于</td>
+    <td> > </td>  <td>大于</td>
   </tr>
   <tr>
     <td> >= </td>  <td>大于等于</td>
