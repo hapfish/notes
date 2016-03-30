@@ -2712,26 +2712,26 @@ R语言还提供了next语句, 执行后只会跳出本次循环, 而不会跳�
   </tr>
   
   <tr>
-    <td>` + `</td>  <td>加</td>
+    <td> + </td>  <td>加</td>
   </tr>
   <tr>
-    <td>` - `</td>  <td>减</td>
+    <td> - </td>  <td>减</td>
   </tr>
   <tr>
-    <td>` * `</td>  <td>乘</td>
+    <td> \* </td>  <td>乘</td>
   </tr>
   <tr>
-    <td>` / `</td>  <td>除</td>
+    <td> / </td>  <td>除</td>
   </tr>
   
   <tr>
-    <td>` ^ `或` ** `</td>  <td>幂运算</td>
+    <td> ^ 或 \*\* </td>  <td>幂运算</td>
   </tr>
   <tr>
-    <td>` x %% y `</td>  <td>求除法运算得到的余数, 如 10 %% 3 结果为1</td>
+    <td> x %% y </td>  <td>求除法运算得到的余数, 如 10 %% 3 结果为1</td>
   </tr>
   <tr>
-    <td>` x %/% y `</td>  <td>整数除法, 例如 10 %/% 3 结果为3 </td>
+    <td> x %/% y </td>  <td>整数除法, 例如 10 %/% 3 结果为3 </td>
   </tr>
   
 </table>
@@ -2745,35 +2745,35 @@ R语言还提供了next语句, 执行后只会跳出本次循环, 而不会跳�
   </tr>
   
   <tr>
-    <td>` < `</td>  <td>小于</td>
+    <td> &lt; </td>  <td>小于</td>
   </tr>
   <tr>
-    <td>` <= `</td>  <td>小于等于</td>
+    <td> <= </td>  <td>小于等于</td>
   </tr>
   <tr>
-    <td>` > `</td>  <td>大于</td>
+    <td> &gt; </td>  <td>大于</td>
   </tr>
   <tr>
-    <td>` >= `</td>  <td>大于等于</td>
+    <td> >= </td>  <td>大于等于</td>
   </tr>
   <tr>
-    <td>` == `</td>  <td>等于</td>
+    <td> == </td>  <td>等于</td>
   </tr>
   
   <tr>
-    <td>` != `</td>  <td>不等于</td>
+    <td> != </td>  <td>不等于</td>
   </tr>
   <tr>
-    <td>` !x `</td>  <td>非x</td>
+    <td> !x </td>  <td>非x</td>
   </tr>
   <tr>
-    <td>` x | y `</td>  <td>x或y(并集)</td>
+    <td> x | y </td>  <td>x或y(并集)</td>
   </tr>
   <tr>
-    <td>` x & y `</td>  <td>x和y(交集)</td>
+    <td> x & y </td>  <td>x和y(交集)</td>
   </tr>
   <tr>
-    <td>` isTRUE(x) `</td>  <td>测试x是否为TRUE</td>
+    <td> isTRUE(x) </td>  <td>测试x是否为TRUE</td>
   </tr>
   
 </table>
