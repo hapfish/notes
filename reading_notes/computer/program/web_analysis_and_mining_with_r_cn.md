@@ -9,7 +9,7 @@ Web Analysis and Mining With R
 QQ邮箱:   568677413@qq.com  
 
 
-# 第一章  统计思维与网站分析 #
+# 第1章  统计思维与网站分析 #
 
 现代统计学的很多理论均是在正态分布的基础上发展起来的. 一旦某一变量服从正态分布, 就可以使用对应的统计学理论来预测该不确定性变量的预测估值及其范围, 并可以给出该预测值的可信度.  
 
@@ -28,7 +28,7 @@ QQ邮箱:   568677413@qq.com
 产出指标包含了  转化次数, 转化率 两个指标.  
 
 
-# 第二章  R语言数据操作基础 #
+# 第2章  R语言数据操作基础 #
 
 R涉及两个含义, 它即表示一种用于数据分析建模以及绘图的语言. 又指一个有着统计分析功能及强大作图功能的软件系统. R语言是由新西兰奥克兰大学的Ross Ihaka和Robert Gentleman共同创建的. 因为它们把该语言称为R. 该语言在GUN协议 General Public Licence 4免费发行, 现在由"R开发核心团队"负责开发. 由于R语言是由AT&T贝尔实验室所创的S语言发展出的一种语言, 因此, 通常情况下使用S语言编写的代码都可以不做任何修改地在R环境下运行.  
 
@@ -3151,73 +3151,497 @@ cat函数可以把R语言命令输出至一个外部文件, 然后通过source�
 
 
 
- 
+# 第3章  R语言的绘图基础 #
 
+R语言绘图函数分类  
 
-
-
-
-
- 
-
-   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
+<table>
+  <tr>
+    <th>分类</th>  <th>描述</th>
+  </tr>
   
+  <tr>
+    <td>绘图窗口操作函数</td>  <td>新建绘图窗口, 设置当前活动窗口</td>
+  </tr>
+  <tr>
+    <td>高级绘图函数</td>  <td>如果 add = FALSE, 则在新窗口中创建一个图形; <br/> 如果 add = TRUE, 则在当前活动窗口中图形叠加在原有的图形之上.</td>
+  </tr>
+  <tr>
+    <td>低级绘图函数</td>  <td>在现有活动窗口添加点, 线, 文字等图形绘图元素, 以及图标, 坐标轴标题, 正标题, 副标题等的提示说明绘图元素.</td>
+  </tr>
+  <tr>
+    <td>扩展绘图包函数</td>  <td>RColorBrewer, lattice, ggplot2 扩展包的核心绘图函数</td>
+  </tr>
+  
+</table>
+
+
+
+
+## 颜色以及文字 点 线的设置 ##
+ 
+各种绘图元素的说明  
+
+<table>
+  <tr>
+    <th rowspan="2">绘图元素</th>  <th colspan="2">设置方式</th>
+  </tr>
+  <tr>
+    <th>高级绘图函数及其参数</th>  <th>低级绘图函数及其参数</th>
+  </tr>
+  
+  <tr>
+    <td>主图形</td>  <td>高级绘图函数且 add = FALSE (默认)</td>  <td>无</td>
+  </tr>
+  <tr>
+    <td>正标题</td>  <td>main参数</td>  <td>title函数的main参数</td>
+  </tr>
+  <tr>
+    <td>副标题</td>  <td>sub参数</td>  <td>title函数的sub参数</td>
+  </tr>
+  <tr>
+    <td>图例</td>  <td>不同函数对应的参数不同</td>  <td>legend函数</td>
+  </tr>
+  <tr>
+    <td>主纵坐标</td>  <td>ylim, axes等参数</td>  <td>asix函数</td>
+  </tr>
+  
+  <tr>
+    <td>主纵坐标标题</td>  <td>ylab参数</td>  <td>title的ylab参数</td>
+  </tr>
+  <tr>
+    <td>副纵坐标</td>  <td>无</td>  <td>axis函数</td>
+  </tr>
+  <tr>
+    <td>副纵坐标标题</td>  <td>无</td>  <td>mtext函数</td>
+  </tr>
+  <tr>
+    <td>横坐标</td>  <td>xlim, axes参数</td>  <td>axis参数</td>
+  </tr>
+  <tr>
+    <td>横坐标标题</td>  <td>xlab参数</td>  <td>title函数的xlab参数</td>
+  </tr>
+  
+  <tr>
+    <td>图形</td>  <td>高级绘图函数且 add = TRUE</td>  <td>无</td>
+  </tr>
+  <tr>
+    <td>点</td>  <td>无</td>  <td>points函数</td>
+  </tr>
+  <tr>
+    <td>线</td>  <td>可绘制线的高级绘图函数且 add = TRUE</td>  <td>lines(添加曲线)函数 <br/> abline(添加直线)函数 </td>
+  </tr>
+  <tr>
+    <td>文字</td>  <td>无</td>  <td>text函数</td>
+  </tr>
+    
+</table>
+
+
+
+文字, 点, 线的常用属性  
+
+<table>
+  <tr>
+    <th>设置对象</th>  <th>属性</th>  <th>常用英文简写</th>
+  </tr>
+  
+  <tr>
+    <td rowspan="3">文字</td>  <td>颜色</td>  <td>col</td>
+  </tr>
+  <tr>
+    <td>文本字体样式</td>  <td>font</td>
+  </tr>
+  <tr>
+    <td>大小(缩放倍数)</td>  <td>cex</td>
+  </tr>
+  
+  <tr>
+    <td rowspan="3">点</td>  <td>点的符号</td>  <td>pch</td>
+  </tr>
+  <tr>
+    <td>颜色</td>  <td>col</td>
+  </tr>
+  <tr>
+    <td>大小(缩放倍数)</td>  <td>cex</td>
+  </tr>
+  
+  <tr>
+    <td rowspan="3">线</td>  <td>线条宽度</td>  <td>lwd</td>
+  </tr>
+  <tr>
+    <td>线条样式</td>  <td>lty</td>
+  </tr>
+  <tr>
+    <td>颜色</td>  <td>col</td>
+  </tr>
+  
+</table>
+
+
+
+R语言提供了自带的固定种类的颜色, 函数是colors(). 该函数可以生成657种颜色名称.  
+
+```  
+> plot( c(1:10), type = "b", col = "black")
+> text(6, 5, labels = "测试 Hello World!", col = "red")
+
+> points(2, 5, col = "blue")
+
+```  
+
+text函数需要在plot()函数存在时, 才能正常显示.  
+
+
+
+展示所有657种颜色名称及其对应的颜色, 并输出到PDF文件中. (window 10 需要管理员身份启动R)  
+
+```  
+# save color to pdf
+
+pdf_file="C:/MyData/R/demo1/script/all_color.pdf"
+pdf(pdf_file, height = 120)
+par(mar = c(0, 10, 3, 0) + 0.1, yaxs = "i")
+barplot(
+    rep(1, length(colors())), col = rev(colors()),
+	names.arg = rev(colors()),
+	horiz = TRUE,
+	las = 1,
+	xaxt = "n",
+	main = expression("Bars of colors in" ~ italic(colors()))
+	)
+	
+dev.off()
+```  
+
+ 
+使用rgb函数, 把RGB颜色转化为16进制.  
+```  
+> plot( c(1:15), type = "b", col = "red")
+> color1<-rgb(red = 126, green = 255, blue = 211, max = 255)
+> color1
+[1] "#7EFFD3"
+
+> text(4, 7, labels = "测试 Hello!", col = color1)
+
+```  
+
+
+rainbow() 即彩虹的颜色, 是由"赤, 橙, 黄, 绿, 青, 蓝, 紫" 一系列颜色组成的. 函数用法:  
+` rainbow(n, s = 1, v = 1, start = 0, end = max(1, n - 1) / n, gamma = 1) `  
+
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>n</td>  <td>设定产生颜色的数目</td>
+  </tr>
+  <tr>
+    <td>start和end</td>  <td>设定彩虹颜色的一个子集, 生产颜色将从这个子集中选取. 这个子集选取的大致分界线为:<br/>
+	                          赤色(red) 为 start = 0, end = 1/6 <br/>
+							  黄色(yellow) 为 start = 1/6, end = 2/6 <br/>
+							  绿色(green) 为 start = 2/6, end = 3/6 <br/>
+							  青色(cyan) 为 start =3/6, end = 4/6 <br/>
+							  蓝色(blue) 为 start = 4/6, end = 5/6 <br/>
+							  紫色(magenta) 为 start = 5/6. end = 1/6
+						</td>	  
+  </tr>
+</table>
+
+
+
+```  
+> rainbow(n = 6, start = 0, end = 1/6)
+[1] "#FF0000FF" "#FF3300FF" "#FF6600FF" "#FF9900FF" "#FFCC00FF" "#FFFF00FF"
+> 
+> barplot(rep(1, 6), col = c(rainbow(n = 6, start = 0, end = 1)))
+
+
+
+> color_red<-rainbow(n = 6, start = 0, end = 1/6)
+> color_yellow<-rainbow(n = 6, start = 1/6, end = 2/6)
+> color_green<-rainbow(n = 6, start = 2/6, end = 3/6)
+> color_cyan<-rainbow(n = 6, start = 3/6, end = 4/6)
+> color_blue<-rainbow(n = 6, start = 4/6, end = 5/6)
+> color_magenta<-rainbow(n = 6, start = 5/6, end = 1)
+
+> colors_all<-c(color_red, "white", color_yellow, "white", color_green, "white", color_cyan, "white", color_blue, "white", color_magenta)
+
+> barplot(rep(1:41), col = colors_all)
+x.text<-c("赤色", "黄色", "绿色", "青色", "蓝色", "紫色")
+> axis(side = 1, at = seq(from = 3, length.out = 6, by = 8.5), labels = x.text, cex = 0.75)
+
+```  
+
+
+其它的主题配色函数  
+
+<table>
+  <tr>
+    <th>配色函数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>heat.colors()</td>  <td>从红色渐变到黄色, 再变到白色</td>
+  </tr>
+  <tr>
+    <td>terrain.colors()</td>  <td>从绿色变到黄色, 再到棕色, 最后到白色</td>
+  </tr>
+  <tr>
+    <td>topo.colors()</td>  <td>从蓝色渐变到青色, 再到黄色, 最后到棕色</td>
+  </tr>
+  <tr>
+    <td>cm.colors()</td>  <td>从青色渐变到白色, 再到粉红色</td>
+  </tr>
+</table>
+
+
+```  
+> barplot( rep(1, 6), col = heat.colors(6) )
+
+> barplot( rep(1, 6), col = terrain.colors(6) )
+
+> barplot( rep(1, 6), col = topo.colors(6) )
+
+> barplot( rep(1, 6), col = cm.colors(6) )
+
+```  
+
+RColorBrewer包提供了3套配色方案, 只需指定配色名称, 就可以用包中的 brewer.pal() 函数生成颜色. 3套配色方案包括:  
+> (1) 连续型 Sequential, 生成一系列连续渐变的颜色, 通常用来标记连续型数值的大小.  
+> (2) 极端型 Diverging, 生成用深色强调两端, 浅色标示中部的系列颜色, 可以用来标记数据中的离群点.  
+> (3) 离散型 Qualitative, 生成一系列彼此差异比较明显的颜色, 通常用来标记分类数据.  
+
+
+在使用前需要先加载RColorBrewer包.  
+
+```  
+> install.packages("RColorBrewer")
+--- 在此連線階段时请选用CRAN的鏡子 ---
+
+> library(RColorBrewer)
+
+```  
+
+
+**seq连续型** 共18组颜色, 每组分为9个渐变颜色.  
+```  
+> display.brewer.all(type = "seq")
+
+> barplot(rep(1, 6), col = brewer.pal(9, "YlOrRd")[3:8])
+
+```  
+
+
+**div极端型** 共9组颜色, 每组分为11个渐变颜色展示.  
+```  
+> display.brewer.all(type = "div")
+
+> barplot( rep(1, 6), col = brewer.pal(11, "BrBG")[3:8])
+
+```  
+
+
+**qual离散型** 共8组颜色, 每组渐变颜色也不尽相同.  
+```  
+> display.brewer.all(type = "qual")
+
+> barplot( rep(1, 6), col = brewer.pal(8, "Accent")[3:8])
+
+```  
+
+
+
+**文字元素** 可以设置的参数一般包括: 字体(font), 颜色(col), 大小(cex)等.  
+
+font(字体)参数的取值是一个整数, 一般分别用1, 2, 3, 4来表示正常体, 粗体, 斜体和斜粗体.  
+```  
+> plot( c(0:10), col = "white" )
+
+> text(2, 2, labels = "正常 Hello World!", font = 1)
+> text(3, 3, labels = "粗体 Hello World!", font = 2)
+> text(4, 4, labels = "斜体 Hello World!", font = 3)
+> text(5, 5, labels = "粗斜体 Hello World!", font = 4)
+
+```  
+
+
+cex(缩放倍数)参数的取值是一个实数, 默认为1, 表示不缩放. 取值小于1时, 表示缩小. 取值大于1时, 表示放大.  
+```  
+> plot( c(0:10), col = "white", xlim = c(1,12))
+
+> text(2, 2, labels = "0.5倍 Hello World!", cex = 0.5)
+> text(3, 3, labels = "0.8倍 Hello World!", cex = 0.8)
+> text(4, 4, labels = "1倍 Hello World!", cex = 1)
+> text(5, 5, labels = "1.2倍 Hello World!", cex = 1.2)
+> text(6, 6, labels = "1.5倍 Hello World!", cex = 1.5)
+
+```  
+
+
+**点元素** 可以设置的参数一般包括: 点样式(pch), 颜色(col), 大小(缩放倍数cex)等, pch(点样式)参数可取1 ~ 25的数字以及部分符号.  
+此外, pch的取值还可以为` * . o O 0 + - | `.  
+
+```  
+# point 
+
+plot(1, col = "white", xlim = c(1, 10), ylim = c(1, 10))
+
+for( i in c(0:25) ) {
+  x<-(i %% 10) + 1
+  y<-(i %/% 10) + 1
+  
+  
+  points(x , y, pch = i, cex = 2)
+  text(x - 0.1, y + 0.4, labels = paste(" ", i))
+  
+}
+
+for( i in (0:25) ) {
+if( length(which( c(21:25) == i) >=1 ) ) {
+    # set 21 to 25 point't background color
+	x<- (i %% 10) + 1
+	y<-4
+	points(x, y, pch = i, bg = "red", cex = 2)
+	text(x - 0.1, y + 0.4, labels = paste("r", i))
+	}
+}
+
+
+others<-c("*", ".", "o", "O", "0", "+", "-", "|", "good", "a", "b", "c")
+for(i in 1:length(others)) {
+  x<- (i %% 10) + 1
+  y<- (i %/% 10) + 6
+  points(x, y, pch=others[i], cex = 2)
+  text(x, y + 0.4, labels = paste("(", others[i], ")"))
+}
+
+```  
+
+点样式大小(cex)的设置与文字元素的大小参数设置一致.  
+
+
+**线元素** 可以设置的参数一般包括: 线条样式(lty), 颜色(col), 粗细(lwd)等.  
+
+线条样式(lty)主要是指实线, 虚线, 点线, 点划线等的样式, lty参数设置不同数值和字符串对应的线条样式:  
+
+<table>
+  <tr>
+    <th>数值</th>  <th>字符串</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>0</td>  <td>"blank"</td>  <td>不画线</td>
+  </tr>
+  <tr>
+    <td>1</td>  <td>"solid"</td>  <td>实线</td>
+  </tr>
+  <tr>
+    <td>2</td>  <td>"dashed"</td>  <td>虚线</td>
+  </tr>
+  <tr>
+    <td>3</td>  <td>"dotted"</td>  <td>点线</td>
+  </tr>
+  <tr>
+    <td>4</td>  <td>"dotdash"</td>  <td>点划线</td>
+  </tr>
+  
+  <tr>
+    <td>5</td>  <td>"longdash"</td>  <td>长划线</td>
+  </tr>
+  <tr>
+    <td>6</td>  <td>"twodash"</td>  <td>点长划线</td>
+  </tr>
+</table>
+
+
+```  
+# lines lyt
+
+v_num<-c(0:6)
+v_str<-c("blank", "solid", "dashed", "dotted", "dotdash", "longdash", "twodash")
+
+point_position<-matrix( rep(rep(1:7), 8), ncol = 8, nrow = 7)
+
+plot(point_position[1, ], type = "l", lty = 0, ylim = c(1, 8), xlim = c(-1, 10), axes = F)
+# text(0, 1, labels = "lty=0")
+
+for( i in c(0:6)) {
+  lines(point_position[i, ] + 1, lty = i)
+  text(0, i + 1, labels = paste("lty=", i))
+  
+  lines(point_position[i, ] + 1.3, lty = v_str[i + 1])
+  text(0, i + 1.3, labels = paste("lty=", v_str[i + 1]))
+}  
+
+
+```  
+
+
+文字和点有大小的概念, 而线条只有宽度的概念. lwd(宽度)参数默认为1, 表示不缩放. 取值小于1, 表示缩放. 取值大于1, 表示放大.  
+
+```  
+# lines lwd
+
+value_lwd<-c(0.5, 0.8, 1, 2, 4)
+
+point_position<-matrix( rep(rep(1:5), 8), ncol = 8, nrow = 5)
+
+plot(point_position[1, ], type = "l", lwd = 0.5, ylim = c(1, 8), xlim = c(-1, 11), axes = F)
+
+for(line in c(1:5)) {
+  lines(point_position[line, ], lwd = value_lwd[line])
+  text(0, line, labels = paste("lwd=", value_lwd[line]))
+}
+
+```  
+线条缩小的效果不明显.  
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
