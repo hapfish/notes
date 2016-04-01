@@ -3603,26 +3603,587 @@ for(line in c(1:5)) {
 
 
 
+## 低级绘图函数 ##
+
+低级绘图函数主要是在现有活动窗口中添加点, 线, 文字等图形绘图元素. 以及图例, 坐标轴标题, 副标题等提示说明绘图元素.  
+
+因为低级函数必须存在于高级绘图函数的基础上, 所以在使用低级绘图函数前, 要先使用高级绘图函数创建一个图形.  
+
+### 标题 ###
+
+title函数的常用参数  
+
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>  <th>实例</th>
+  </tr>
+  
+  <tr>
+    <td>main</td>  <td>设置主标题内容和文字属性</td>  <td>main="主标题"<br/>  main=list("主标题", font = 3, col = "red", cex = 1.5)
+  </tr>
+  <tr>
+    <td>sub</td>  <td>设置副标题内容和文字属性</td>  <td>sub=list("副标题", font = 3, col = "red", cex = 1.2)
+  </tr>
+  <tr>
+    <td>xlab</td>  <td>设置x轴标题内容和文字属性</td>  <td>xlab = list("x轴标题", font = 3, col = "red", cex = 0.8)</td>
+  </tr>
+  <tr>
+    <td>ylab</td>  <td>设置y轴标题内容和文字属性</td>  <td>ylab = list("y轴标题", font = 3, col = "red", cex = 0.8)</td>
+  </tr>
+
+</table>
+
+
+```  
+> df1<-data.frame(v1=sample(c(101:110), 6, replace = TRUE), v2=sample(c(101:110), 6, replace = TRUE))
+> barplot(as.matrix(rbind(df1$v1, df1$v2)), beside = TRUE, ylim = c(90, 120), col = c("red", "blue"), axes = F)
+
+> main1<-list("趋势分析图", cex = 1.5, col = "red", font = 3)
+> sub1<-paste("日期 2016-03-01", "\n", "第三方数据")
+> ylab1<-"参与人数"
+> xlab1<-"小时"
+
+> barplot(as.matrix(rbind(df1$v1, df1$v2)), beside = TRUE, ylim = c(0, 120), col = c("red", "blue"), axes = F)
+> title(main = main1, sub = sub1, ylab = ylab1)
+
+
+> barplot(as.matrix(rbind(df1$v1, df1$v2)), beside = TRUE, ylim = c(0, 120), col = c("red", "blue"), axes = F)
+> title(main = main1, ylab = ylab1, xlab = xlab1)
+
+
+> barplot(as.matrix(rbind(df1$v1, df1$v2)), beside = TRUE, ylim = c(0, 130), col = c("red", "blue"), main = main1, sub = sub1, ylab = ylab1)
+```  
+
+横坐标与副标题可能重复.  
+
+回车字符"\n"可以换行, 在R中, 特殊字符均使用反斜杠"\"开头.  
+
+可以直接在高级绘图函数barplot中设置参数.  
+
+
+### 图例 ###
+
+图例说明不同颜色代表的数据.  
+
+legend函数的常用参数  
+
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>x 和 y</td>  <td>设置图例的位置(左上角位置). 除了使用 x 和 y 参数外, 还可以使用"bottomright", "bottom", "bottomleft", "left", "topleft", "top", "topright", "right", "center"参数.</td> 
+  </tr>
+  <tr>
+    <td>legend</td>  <td>一个字符向量, 表示图例中的文字</td>
+  </tr>
+  <tr>
+    <td>horiz</td>  <td>为FALSE(默认)时. 图例垂直排列.  为TRUE时, 图例水平排列.</td>
+  </tr>
+  <tr>
+    <td>ncol</td>  <td>图例的列数目, 如果horiz为TRUE, 则此项无意义.</td>
+  </tr>
+  <tr>
+    <td>pch</td>  <td>图例中点的样式, 可以既设置pch, 又设置lty, 并可以设置为NA, 表示某组图例无点样式.</td>
+  </tr>
+  
+  <tr>
+    <td>lty</td>  <td>图例中的线样式, 可以既设置pch, 又设置lty, 并可以设置为NA, 表示某组图例无线样式.</td>
+  </tr>
+  <tr>
+    <td>col</td>  <td>图例中点/线的颜色.</td>
+  </tr>
+  <tr>
+    <td>bg</td>  <td>图例的背景颜色, 在bty参数为"n"时无效</td>
+  </tr>
+  <tr>
+    <td>bty</td>  <td>设置图例框的样式, 默认为"o", 表示显示边框. 设置为"n", 表示无边框. </td>
+  </tr>
+  <tr>
+    <td>title</td>  <td>设定图例的标题</td>
+  </tr>
+  
+      
+</table>
+
+
+```  
+> name_list<-c("Java语言", "C语言", "R语言", "C++语言")
+> colors_all<-c("red", "blue")
+
+> barplot(c(11:20), ylim = c(0, 50))
+
+> legend("topleft", pch = c(15, 15, 16, 16), legend = name_list, col = colors_all, bty = "n", horiz = TRUE)
+
+> legend(1, 25, pch = c(15, 15, NA, NA), legend = name_list, col = colors_all, bty = "o", bg = "yellow")
+
+
+> barplot(c(11:20), ylim = c(0, 50), legend.text = name_list)
+
+```  
+
+直接在barplot函数设置legend.text参数图标的文字, 系统会直接选取相应的颜色, 线条及点样式. 这种方式较为便捷, 但是灵活性较差, 笔者习惯使用legend函数的设置方法.  
+
+
+
+### 坐标轴 ###
+
+坐标轴的设置主要包括主坐标轴(x轴和y轴)的范围和刻度标记, 以及副坐标(右侧的纵坐标)的相关属性.  
+
+axis函数可以在上, 下, 左, 右4个边上设置坐标轴, 并设置坐标轴的范围/刻度标记等.  
+
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>side</td>  <td>设置坐标轴所在的边, 当取值为1, 2, 3, 4时, 分别表示坐标轴处于下, 左, 上, 右各边</td>
+  </tr>
+  <tr>
+    <td>labels</td>  <td>通过向量来设置各坐标轴内各刻度的名称(刻度标记)</td>
+  </tr>
+  <tr>
+    <td>font.axis</td>  <td>刻度标记的字体</td>
+  </tr>
+  <tr>
+    <td>cex.axis</td>  <td>刻度标记的大小</td>
+  </tr>
+  <tr>
+    <td>col.axis</td>  <td>刻度标记的颜色</td>
+  </tr>
+  
+  <tr>
+    <td>at</td>  <td>通过向量来设置坐标轴内各刻度标记的位置, at参数向量要与labels向量一一对应</td>
+  </tr>
+  <tr>
+    <td>tick</td>  <td>逻辑参数, 如果tick = TRUE(默认), 则画出坐标轴. 如果tick = FALSE, 则不画出坐标轴. 注意, 此时并不影响刻度标记labels的展示</td>
+  </tr>
+  <tr>
+    <td>col</td>  <td>坐标轴的颜色. tick = TRUE 时有效</td>
+  </tr>
+  <tr>
+    <td>col.ticks</td>  <td>坐标轴刻度的颜色. 注意, col.ticks是指与坐标轴垂直的小刻度线的颜色. col表示设置除刻度标记(labels)以外的部分颜色, 包括 col.ticks</td>
+  </tr>
+  <tr>
+    <td>lty</td>  <td>坐标轴的样式. tick = TRUE时有效</td>
+  </tr>
+  
+  <tr>
+    <td>lwd</td>  <td>坐标轴的宽度, tick = TRUE时有效</td>
+  </tr>
+</table>
+
+
+```  
+> barplot(c(11:20), ylim = c(0, 50), xlim = c(0, 30))
+
+> c1<-seq(from = 2, by = 3, length.out = 7)
+> label1<-c("Java", "C", "C++", "R", "Python", "PHP", "Ruby")
+
+> axis(3, c1, labels = label1, cex.axis = 0.75, col.axis = "red", col = "blue", col.ticks = "green")
+
+> axis(side = 1, c1, labels = label1, tick = FALSE, cex.axis = 0.75)
+
+> axis(4, at = c1, labels = c("-60%", "-40%", "-20%", "0", "20%", "40%", "60%"))
+
+
+```  
+
+
+在高级绘图函数中, 一般都有用于设置坐标轴的展示和范围的axes, xlim和ylim参数.  
+
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>axes</td>  <td>逻辑参数, 如果 axes = TRUE(默认), 则显示x轴和y轴.  如果 axes = FALSE, 则隐藏x轴和y轴</td>
+  </tr>
+  <tr>
+    <td>xaxt</td>  <td>x轴样式, 取值为"n"表示隐藏x坐标轴. 默认取值是"s", 表示以标准样式显示x轴</td>
+  </tr>
+  <tr>
+    <td>yaxt</td>  <td>y轴样式, 取值同xaxt</td>
+  </tr>
+  <tr>
+    <td>xaxs</td>  <td>x轴的计算方式, 默认为"r", 表示先把原始数据的范围向外扩大4%, 然后用这个范围画坐标轴. 取值为"i"表示直接使用原始数据范围</td>
+  </tr>
+  <tr>
+    <td>yaxs</td>  <td>y轴的计算方式, 取值同xaxs</td>
+  </tr>
+  
+  <tr>
+    <td>xlog</td>  <td>设置x轴坐标是否取对数, 默认为FALSE</td>
+  </tr>
+  <tr>
+    <td>ylog</td>  <td>设置y轴坐标是否取对数, 取值同xlog</td>
+  </tr>
+  <tr>
+    <td>xlim</td>  <td>x轴的范围, 设置为c(from, to), from是x轴的首坐标, to是尾坐标</td>
+  </tr>
+  <tr>
+    <td>ylim</td>  <td>y轴的范围, 取值同xlim</td>
+  </tr>
+</table>
+
+
+如果要隐藏x轴和y轴, 则设置 axes = FALSE, 如果要隐藏x轴, 只显示y轴, 则设置axes为FALSE后, 并在后续使用axis(2), 也可以直接设置xaxt参数为"n".  
+```  
+> data_test<-data.frame(v1=sample(c(11:20), 7, replace = TRUE), v2=sample(c(11:20), 7, replace = TRUE))
+> data_m<-as.matrix(rbind(data_test$v1, data_test$v2))
+
+> barplot(data_m, beside = TRUE, ylim = c(0, 60), col = c("red", "blue"), axes = F)
+> axis(2)
+
+```  
+
+
+
+
+在绘制样本的散点图时, rug函数可以体现相应样本的分布情况.  
+
+```  
+> c1<-sample(seq(from = 11, to = 20, by = 0.05), 1000, replace = TRUE)
+> c2<-sample(seq(from = 11, to = 20, by = 0.05), 1000, replace = TRUE)
+
+> plot(c1, c2, main = "散点图")
+> rug(c1)
+> rug(c2, side = 2)
+
+
+```  
+
+rug(conver)命令绘制转化率数据在x轴的分布情况. 其中黑线越密集, 表示转化率在该区域的分布越集中. rug(c2, side = 2)绘制在y轴的分布情况, side = 2表示绘制位置在y轴上, 默认 side = 1, 表示绘制位置在x轴上.  
+
+
+
+
+### 边框 ###
+
+bty参数可以设置图形边框样式, 取值为字符"o", "l", "7", "c", "u", "]"; 这些字符本身的形状对应边框的样式, 例如o(默认值)表示4条边框都显示, c表示不显示右边框, byt为"n"时, 表示不绘制任何边框.  
+如果axes参数设置为FALSE, 则bty参数设置无效.  
+
+```  
+> x_name<-c("m1", "m2", "m3", "m4", "m5", "m6")
+> v1<-c(sample(c(10:20), 6, replace = TRUE))
+
+> plot(v1, type = "b", ylim = c(0, 60), xaxt = "n", yaxt = "n", main = "bty默认值", xlab = "x轴", ylab = "y轴")
+
+> plot(v1, type = "b", ylim = c(0, 60), xaxt = "n", yaxt = "n", bty = "l", main = "bty=l", xlab = "x轴", ylab = "y轴")
+
+> plot(v1, type = "b", ylim = c(0, 60), xaxt = "n", yaxt = "n", bty = "7", main = "bty=7", xlab = "x轴", ylab = "y轴")
+
+> plot(v1, type = "b", ylim = c(0, 60), xaxt = "n", yaxt = "n", bty = "c", main = "bty=c", xlab = "x轴", ylab = "y轴")
+
+> plot(v1, type = "b", ylim = c(0, 60), xaxt = "n", yaxt = "n", bty = "u", main = "bty=u", xlab = "x轴", ylab = "y轴")
+
+> plot(v1, type = "b", ylim = c(0, 60), xaxt = "n", yaxt = "n", bty = "]", main = "bty=]", xlab = "x轴", ylab = "y轴")
+
+> plot(v1, type = "b", ylim = c(0, 60), xaxt = "n", yaxt = "n", bty = "[", main = "bty=[", xlab = "x轴", ylab = "y轴")
+> plot(v1, type = "b", ylim = c(0, 60), xaxt = "n", yaxt = "n", bty = "n", main = "bty=n", xlab = "x轴", ylab = "y轴")
+
+> axis(1, at = 1:6, labels = x_name, tick = FALSE)
+
+> box( bty = "7", col = "blue" , lwd = 1.5, lty = "longdash")
+
+```  
+
+通过box()函数也可以设置各边框的线条样式.  
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>bty</td>  <td>边框样式</td>
+  </tr>
+  <tr>
+    <td>col</td>  <td>边框颜色</td>
+  </tr>
+  <tr>
+    <td>lwd</td>  <td>边框线条的宽度</td>
+  </tr>
+  <tr>
+    <td>lty</td>  <td>边框线条的样式</td>
+  </tr>
+</table>
  
 
 
 
+### 网格线 ###
+
+grid()函数可以在绘图的基础上添加网格线, 其参数主要包括:  
+ny用于设置水平网格的数目, nx用于设置垂直网格的数目.  设置为NA时, 表示不绘制相应的网格线.  
+lwd, lty和col参数分别设置网格线的宽度, 样式和颜色.  
+
+```  
+
+> x_name<-c("m1", "m2", "m3", "m4", "m5", "m6")
+> v1<-c(sample(c(10:20), 6, replace = TRUE))
+
+> plot(v1, type = "b", ylim = c(0, 60), xaxt = "n", yaxt = "n", main = "bty默认值", xlab = "x轴", ylab = "y轴")
+> axis(1, at = 1:6, labels = x_name, tick = FALSE)
+
+> grid(nx = NA, ny = 4, lwd = 1, lty = "dashed", col = "blue")
+> grid(nx = 6, ny = 6, lwd = 1, lty = "dashed", col = "red")
+
+```  
+
+
+### 点 ###
+
+通过低级绘图函数points可以独立添加点元素.  
+
+<table>
+  <tr>
+    <td>参数</td>  <td>说明</td>
+  </tr>
+  
+  <tr>
+    <td>x</td>  <td>横坐标位置, 可以设置向量来代表多个点的位置</td>
+  </tr>
+  <tr>
+    <td>y</td>  <td>纵坐标位置, 可以设置向量来代表多个点的位置</td>
+  </tr>
+  <tr>
+    <td>type</td>  <td>有9种取值, 分别代表不同的样式:<br>
+	"p"表示画点(默认);<br/>
+	"l"表示画线;<br/>
+	"b"表示同时画点和线, 但点线不相交;<br/>
+	"c"表示将 type="b"中的点去掉, 只剩下相应的线条部分;<br/>
+	"o"表示同时画点和线, 且相互重叠(这是与 type="b" 的区别);<br/>
+	"h"表示画铅垂钱;<br/>
+	"s"表示画阶梯线, 从一点到下一点时, 先画水平线, 再画垂直线;<br/>
+	"S"也是表示画阶梯线, 但从一点到下一点是先画垂直线, 再画水平线;<br/>
+	"n"表示不画线</td>	
+  </tr>
+  <tr>
+    <td>pch</td>  <td>点样式</td>
+  </tr>
+  <tr>
+    <td>col</td>  <td>点颜色</td>
+  </tr>
+  
+  <tr>
+    <td>bg</td>  <td>点的背景色, pch取21 ~ 25时有效</td>
+  </tr>
+  <tr>
+    <td>lwd</td>  <td>点的边线宽度</td>
+  </tr>
+  <tr>
+    <td>cex</td>  <td>点的大小</td>
+  </tr>
+</table>
+
+
+```  
+> x1<-c(1:10)
+> y1<-c(1:10)
+
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), col = "blue", main = "ponits type = p")
+> points(x1, y1, type = "p")
+
+
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), col = "blue", main = "ponits type = l")
+> points(x1, y1, type = "l")
+
+
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), col = "blue", main = "ponits type = b")
+> points(x1, y1, type = "b")
+
+
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), col = "blue", main = "ponits type = c")
+> points(x1, y1, type = "c")
+
+
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), col = "blue", main = "ponits type = o")
+> points(x1, y1, type = "o")
+
+
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), col = "blue", main = "ponits type = h")
+> points(x1, y1, type = "h")
+
+
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), col = "blue", main = "ponits type = s")
+> points(x1, y1, type = "s")
+
+
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), col = "blue", main = "ponits type = S")
+> points(x1, y1, type = "S")
+
+
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), col = "blue", main = "ponits type = n")
+> points(x1, y1, type = "n")
+
+
+```  
 
 
 
+### 线 ###
+
+使用函数来绘制曲线(lines函数), 直线(abline函数), 线段(segments函数).  
+
+abline函数的基本形式是:  
+` abline(a = NULL, b = NULL, h = NULL, v = NULL, coef = NULL) `  
+
+a是截距, b是斜率, h是画水平线时的纵轴值, v是画垂直线时的横轴值. coef是一个能用函数coef()提取系数(包括斜率和截距)的R对象, 典型的使用案例就是用线性模型(回归)生成的对象. 其系数是一个长度为2的向量, 并分别表示为直线的截距和斜率.  
+
+<table>
+  <tr>
+    <th>类型</th>  <th>形式</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>直线</td>  <td>abline(a, b)</td>  <td>画出 y = a + bx直线</td>
+  </tr>
+  <tr>
+    <td>水平线</td>  <td>abline(h = y)</td>  <td>画出一条由所有纵坐标等于y值的点所组成的水平直线</td>
+  </tr>
+  <tr>
+    <td>垂直线</td>  <td>abline(v = x)</td>  <td>画出一条由所有横坐标等于x值的点所组成的垂直直线</td>
+  </tr>
+  <tr>
+    <td>线性模型回归直线</td>  <td>abline(lm.obj)</td>  <td>画出由lm函数获取的回归直线的模型</td>
+  </tr>
+</table>
+
+
+```  
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30))
+> abline(5, 2)
+> abline(5, 3)
+> 
+> abline(h = 10)
+> abline(h = 12)
+> 
+> abline(v = 20)
+> abline(v = 21)
 
 
 
+> v1<-sample(seq(from = 5, to = 20, by =1), 10, replace = TRUE) 
+> v2<-sample(seq(from = 4, to = 21, by = 1), 10, replace = TRUE)
+> lm_data<-lm(v1 ~ v2)
+> lm_data
+
+Call:
+lm(formula = v1 ~ v2)
+
+Coefficients:
+(Intercept)           v2  
+      4.068        0.902  
+
+	  
+> plot(v1 ~ v2, ylab = "v1数据", xlab = "v2数据", ylim = c(0, 30), xlim = c(0, 30))
+> abline(lm_data)
+
+
+```  
+
+lm是回归模型函数, lm(v1 ~ v2)表示最后得出的模型是一个线性模型.  
+
+abline函数还有col, lty, lwd等关于线元素的参数.  
+
+
+和abline不同, segments函数只绘制一段直线. 而并非绘制贯穿整个绘图窗口的直线. 在` segments(x0, y0, x1 = x0, y1 =y0, ...) `中, 主要的4个参数代表线段的起点和终点坐标. 此外还有col, lty, lwd等关于线元素的参数.  
+
+```  
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), main = "segments测试")
+
+> segments(2, 3, 7, 8, col = "blue", lty = "dotdash", lwd = 1.5)
+> segments(5, 10, 20, 30, col = "red", lty = "twodash", lwd = 1)
+
+
+```  
+
+
+arrows函数与segments函数很类似, 只是多了一个angle参数用于设置箭头样式, 它表示箭头尖短线的角度. (默认为30度)  
+
+```  
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), col ="blue", main = "arrows测试")
+
+> arrows(1, 2, 25, 5, angle = 90)
+> text(27, 5, "angle=90")
+
+> arrows(1, 7, 25, 10, angle = 60)
+> text(27, 10, "angle=60")
+
+
+> arrows(1, 12, 25, 15, angle = 30)
+> text(27, 15, "angle=30")
+
+
+> arrows(1, 17, 25, 20, angle = 0)
+> text(27, 20, "angle=0")
+
+```  
+
+abline, segments和arrows只能绘制直线, lines可以通过散点样本的坐标绘制任意曲线. plot是绘制散点图的高级绘图函数, 但是它并没有add参数, 即在同一绘图窗口不能使用两个plot函数, 此时可以使用lines函数.  
+
+在` lines(x, y = NULL, type = "l", ...) `中, x和y分别是散点样本的x轴与y轴坐标数据. type参数可以参考points函数, 支持col, lty, lwd等关于线元素的参数.  
+
+```  
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), main = "lines测试")
+
+> px1<-seq(from = 5, by = 2, length.out = 10)
+> py1<-sample(c(10:25), 10, replace = TRUE)
+> lines(px1, py1, type = "b", col = "red")
+
+> px2<-seq(from = 5, by =2, length.out = 10)
+> py2<-sample(c(5:30), 10, replace = TRUE)
+> lines(px2, py2, type = "o", col = "blue")
 
 
 
+```  
 
 
+### 文字 ###
+
+text函数用于添加文字, ` text(x, y = NULL, labels = seq_along(x), cex = 1, col = NULL, font = NUll, ...) `  
+x和y表示绘制文字的位置向量, labels用于设置文字内容; cex, col和font参数分别表示文字大小, 颜色和字体.  
+
+```  
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), main = "text函数")
+
+> text(5, 10, col = "blue")
+> text(10, 15, labels = "Hello World!", cex = 1.5, col = "red", font = 3)
+> text(20, 25, labels = "Hello World!", cex = 1, col = "red", font = 3)
+
+> text(c(10:15), c(5:10), labels = "Hello World!", cex = 1, col = "red", font = 3)
+
+```  
 
 
+### 多边形 ###
+
+polygon函数用于绘制一个多边形, 基本形式为:  
+` polygon(x, y, ...) `  
+
+其中x向量和y向量用于设置多边形各个顶点的坐标位置.  
+
+```  
+
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), main = "多边形1")
+> polygon(x = c(2, 18, 18, 2), y = c(3, 3, 15, 15), col = "blue", border = "red")
 
 
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), main = "多边形2")
+> polygon(x = c(2, 18, 2, 18), y = c(3, 3, 15, 15), col = "yellow", border = "blue")
 
+
+> plot(-5, ylim = c(0, 30), xlim = c(0, 30), main = "多边形-梯形")
+> polygon(x = c(2, 22, 14, 4), y = c(5, 5, 10, 10))
+
+
+```  
+
+注意, 两个多边形的顶点坐标值相同, 但是顶点的绘制顺序不同, 这最终也会导致绘制的多边形不同.  
 
 
 
