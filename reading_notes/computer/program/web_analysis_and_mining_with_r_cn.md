@@ -4189,14 +4189,336 @@ polygon函数用于绘制一个多边形, 基本形式为:
 
 
 
+## 高级绘图函数应用 ##
+
+高级绘图函数是R语言的主体, 大部分高级绘图函数均有add参数(plot没有). 如果 add = FALSE(默认), 则在新窗口创建图形. 如果 add = TRUE 则在当前活动窗口中的原有图形之上叠加. 在基础包中, 常用的高级函数有 plot(绘制散点图/曲线图), barplot(绘制柱形图/条形图), hist(绘制直方图), pie(绘制饼图)等. 此外使用ggplots扩展包可以绘制星状图, 堆积面积图, 气泡图.  
+
+常用图形  
+<table>
+  <tr>
+    <th>类型</th>  <th>说明</th>  <th>R函数</th>
+  </tr>
+  
+  <tr>
+    <td>散点图</td>  <td>把一维数据或二维数据描述在x-y平面上</td>  <td>plot</td>
+  </tr>
+  <tr>
+    <td>气泡图</td>  <td>在散点图的基础上, 使用点的大小来代表第三维数据</td>  <td>plot或ggplot2包ggplot函数</td>
+  </tr>
+  <tr>
+    <td>曲线图</td>  <td>把散点图的所有样本点连接成线来展示</td>  <td>plot或lines</td>
+  </tr>
+  <tr>
+    <td>柱形图</td>  <td>把主体数据通过垂直于x轴的柱形来展示</td>  <td>barplot</td>
+  </tr>
+  <tr>
+    <td>条形图</td>  <td>柱形图翻转90度</td>  <td>barplot</td>
+  </tr>
+  
+  <tr>
+    <td>饼图</td>  <td>静态展示各个成分占整体的情况</td>  <td>pie</td>
+  </tr>
+  <tr>
+    <td>堆积面积图</td>  <td>动态展示各个成分占整体的情况</td>  <td>ggplot2包 qplot函数</td>
+  </tr>
+  <tr>
+    <td>直方图</td>  <td>分析一维数据的频次, 分隔尺度是有限数据</td>  <td>hist</td>
+  </tr>
+  <tr>
+    <td>密度曲线图</td>  <td>分析一维数据的频次, 分隔尺度是无限小</td>  <td>plot(density())</td>
+  </tr>
+  <tr>
+    <td>雷达图/星状图</td>  <td>展示样本点的不同维度取值</td>  <td>fms包的radarchart函数</td>
+  </tr>
+  
+  <tr>
+    <td>关系网络图</td>  <td>绘制不同样本点之间的联系程度</td>  <td>igraph包 plot函数</td>
+  </tr>
+</table>
+
+
+
+本章将在国外专家Andrew Abela整理分析的基础上结合互联网常用分析方式, 从比较, 分布, 构成, 联系等4个大的方面入手, 给出相应的图形选择思路.  
+> (1) 比较: 可以比较相同变量在不同时间下的数据, 即所谓的时间序列分析和预测. 同时可以比较相同变量不同分类下的数据.  
+> (2) 分布: 在分析变量前, 往往要查看样本点的分布是否符合正态分布, 以及是否有异常点等.  
+> (3) 联系: 可以绘制散点图或气泡图, 用以分析二维或三维数据间的关系. 使用网络关系图可以查看不同样本间的联系.  
+> (4) 构成: 可以静态比较各个成分占总体的比例, 从而分清问题的主次. 也可以动态查看不同成分的比例变化.  
+
+
+
+### 散点图 ###
+
+plot默认绘制散点图.  
+
+```  
+> x1<-sample(seq(from = 5, by = 0.1, length.out = 100), 100, replace = TRUE)
+> y1<-sample(seq(from = 10, by = 1, length.out = 1000), 100, replace = TRUE)
+ 
+> plot(x1, y1, ylim = c(0, 1100), xlim = c(0, 25), main = "散点图", xlab = "x1数据", ylab = "y1数据")
+
+> rug(x1)
+> rug(y1, side = 2)
+
+```  
+
+
+### 气泡图 ###
+
+plot函数设置cex表示气泡大小, 可以绘制气泡图.  
+
+```  
+> library(RColorBrewer)
+> col_type<-brewer.pal(11, "Spectral")[2:11]
+
+> x1<-sample(seq(from = 5, by = 1, length.out = 20), 10, replace = TRUE)
+> y1<-sample(seq(from = 10, by = 5, length.out = 30), 10, replace = TRUE)
+> z1<-sample(seq(from = 100, by = 10, length.out = 15), 10, replace = TRUE)
+> title1<-paste("type", seq(from = 1, by = 3, length.out = 10))
+
+> cex_max<-15
+> cex_min<-5
+> cex_rate<-(cex_max - cex_min) / (max(z1) - min(z1))
+> cex_displacement<-cex_min - cex_rate * min(z1) 
+> cex_value<-cex_displacement + cex_rate * z1
+
+> cex_value
+ [1]  7.307692 15.000000 11.923077  9.615385 13.461538  8.076923  8.076923
+ [8] 15.000000  5.000000 12.692308
+ 
+
+> plot(x1, y1, col = col_type, cex = cex_value, pch = 16, ylim = c(0, 200), xlim = c(0, 35), xlab = "x1数据", ylab = "y1数据", main = list("气泡图", cex = 3), yaxt = "n")
+
+> legend("topleft", legend = title1, pch = 16, col = col_type, bty = "n", cex = 1.2, ncol = 5)
+
+> axis(2, labels = paste("y=", seq(from = 0, by = 50, length.out = 5)), at = seq(from = 0, by = 50, length.out = 5))
+
+> text(x = 25, y = 160, labels = "z1数据用气泡大小表示", cex = 1.5)
+
+
+```  
+
+
+### 曲线图 ###
+
+设置plot函数的type参数把样本的散点串联起来变成曲线, 在绘制曲线图时, type参数可以设置为如下方面:  
+> (1) "l"  表示画线.  
+> (2) "b"  表示同时画点和线, 但点线不相交.  
+> (3) "c"  表示将 type = "b" 中的点去掉, 只剩下相应的线条部分.  
+> (4) "o"  表示同时画点和线, 且相互重叠(这是与type = "b"的区别).  
+> (5) "s"  表示画阶梯线, 从一点到下一点时, 先画水平线, 再画垂直线.  
+> (6) "S"  也是画阶梯线, 但从下一点是先画垂直线, 再画水平线.  
+
+
+```  
+> x_value<-paste("v", seq(from = 1, by = 1, length.out = 10), seq = "")
+
+> y1<-sample(seq(from = 5, by = 2, length.out = 20), 10, replace = TRUE)
+> y2<-sample(seq(from = 10, by = 1, length.out = 25), 10, replace = TRUE)
+> y3<-sample(seq(from = 5, by = 1, length.out = 30), 10, replace = TRUE)
+
+> y_name<-paste("y", seq(from = 1, by = 1, length.out = 3))
+> col_value<-c("red", "blue", "yellow")
+
+
+
+> plot(y1, type = "b", xaxt = "n", ylim = c(0, 100), col = col_value[1], main = "曲线图", xlab = "x数据", ylab = "y数据")
+
+> axis(1, at = 1:10, labels = x_value, tick = FALSE)
+> legend("topleft", legend = y_name, horiz = T, pch = 15, col = col_value, cex = 1.2, bty = "n")
+> grid(nx = NA, ny = 6, lwd = 1, lty = 2, col = "green")
+
+> lines(y2, type = "o", col = col_value[2])
+> lines(y3, type = "c", col = col_value[3])
+
+
+```  
+
+
+
+### 柱状图 ###
+
+柱状图实际还是散点图, 只是它更适合用户描述主数据(y轴数据)在不同分类(x轴是因子类型的分类数据, 或者是时间数据)下的展示情况. 同时, 柱状图还可以清晰地绘制不同情况下的多组数据, 以便横向对比. 基本形式是:  
+` barplot(height, horiz = FALSE, beside = FALSE, ...) `  
+
+<table>
+  <tr>
+    <th>参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>height</td>  <td>绘制的数据. 如果绘制一组数据, 则以向量形式输入. 如果绘制多组数据, 则以矩阵形式输入, 每行表示一组数据</td>
+  </tr>
+  <tr>
+    <td>horiz</td>  <td>如果是FALSE(默认取值), 则绘制柱状图. 如果是TRUE, 则绘制条形图</td>
+  </tr>
+  <tr>
+    <td>beside</td>  <td>如果是FALSE(默认值), 则不同组数据垂直堆积表示. 如果是TRUE, 则不同组数据水平并列展示</td>
+  </tr>
+</table>
+
+
+```  
+> y1<-sample(seq(from = 1, by = 1, length.out = 20), 6, replace =TRUE)
+> y2<-sample(seq(from = 1, by = 1, length.out = 20), 6, replace =TRUE)
+
+> col_value<-c("red", "blue")
+> y_frame<-data.frame(y1_value = y1, y2_value = y2)
+
+> barplot(y_frame$y1_value, beside = TRUE, axes = F)
+> axis(2)
+> x_name<-paste("x名", seq(from = 1, by = 1, length.out = 6))
+> axis(1, seq(from = 1, by = 2, length.out = 6), labels = x_name, tick = FALSE, cex.axis = 1.2)
+
+
+> barplot(t(as.matrix(y_frame)), beside = TRUE, col = col_value, axes = F)
+> axis(2)
+> axis(1, seq(from = 2, by = 3, length.out = 6), labels = x_name, tick = FALSE, cex.axis = 1.1)
+> title(main = "柱状图", cex = 1.8, col = "green", font = 4, ylab = "y的数据")
+
+
+# horiz = true
+> barplot(t(as.matrix(y_frame)), beside = TRUE, col = col_value, axes = F, horiz = T)
+> axis(1)
+> axis(2, seq(from = 2, by = 3, length.out = 6), labels = x_name, tick = FALSE, cex.axis = 1.1)
+> title( main = list("柱状图horiz=TRUE时为条形图", cex = 1.8, col = "green", font = 3), xlab = "y数据")
+
+
+# beside = false
+> barplot(t(as.matrix(y_frame)), col = col_value, axes = F)
+> axis(2)
+> axis(1, seq(from = 1, by = 1, length.out = 6), labels = x_name, tick = FALSE, cex.axis = 1.2)
+> title(main = list("beside默认值", cex = 1.2, col = "red", font = 3), ylab = "y数据")
+
+```  
+
+设置horiz为TRUE, 则绘制平行于x轴的条形图.  
+
+当有多组数据时, 可通过beside参数把各组数据以水平并列的方式(beside = TRUE)展示, 或以垂直堆积方式(beside = FALSE, 默认值)展示.  
 
 
 
 
+### 条形图 ###
+
+把barplot函数中horiz参数设置为TRUE便可绘制条形图.  
 
 
 
 
+### 饼图 ###
+
+饼图可以静态展示整体内不同成分的构成, 实际上饼图也可以使用条形图或柱状图代替, 当成分数目较少时, 使用饼图绘制更好. 当成分数目较多时, 可以考虑使用柱状图或条形图.  
+
+饼图的核心函数是:  
+` pie(x, labels = names(x), ... `  
+
+```  
+> data_name<-paste("data", seq(from = 1, by = 1, length.out = 7), sep = "")
+> data_value<-sample(seq(from = 10, by = 1, length.out = 50), 7, replace = TRUE)
+
+> pie_data<-data.frame(name = data_name, value = data_value)
+
+> library(RColorBrewer)
+> col_value<-brewer.pal(11, "Spectral")[3:10]
+ 
+> pie(pie_data$value, col = col_value, xaxt = "n", labels = paste(pie_data$name, ": ", round(pie_data$value * 100 / sum(pie_data$value)), "%", sep = ""))
+
+
+```  
+
+
+
+### 面积堆积图 ###
+
+希望动态了解整体在不同阶段的不同成分. 当不同阶段的水平值(数据分组的数目较少)时, 可以使用条形图或柱状图. 但如果数目较多, 使用条形图和柱状图将会很拥挤, 甚至会出现在一张图中放不下的情况, 此时可以使用面积堆积图.  
+
+绘制面积堆积图需要加载ggplot2包, ggplot2包绘制图形的语法相对统一, 主要是弥补了R语言内的自带绘图函数语法相对零散的缺点.  
+
+```  
+> install.packages("ggplot2")
+> library(ggplot2)
+
+```  
+
+绘制百分比面积堆积图  
+` ggplot(data = ..., mapping = aes(...)) + geom_area(position = "fill") `  
+
+绘制面积堆积图  
+` ggplot(data = ..., mapping = aes(...)) + geom_area() `  
+
+
+<table>
+  <tr>
+    <th colspan="2">参数</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td colspan="2">data</td>  <td>设置面积堆积图的源数据, 通常为数据框</td>
+  </tr>
+  <tr>
+    <td colspan="2">mapping</td>  <td>设置数据源中与x轴, y轴以及分组和分组颜色的关系. 通常使用, aes( x = ..., y = ..., group = ..., fill = ) 来取值</td>
+  </tr>
+  
+</table>
+
+<table>
+  <tr>
+    <td rowspan="4">aes内部参数</td>  <td>x</td>  <td>指定源数据data中被映射为x轴的列</td>
+  </tr>
+  <tr>
+    <td>y</td>  <td>指定源数据data中被映射为y轴的列</td>
+  </tr>
+  <tr>
+    <td>group</td>  <td>指定源数据data中用于区分不同组别数据所在的列</td>
+  </tr>
+  <tr>
+    <td>fill</td>  <td>指定源数据data中用于区分不同组别颜色数据所在的列</td>
+  </tr>
+</table>
+
+```  
+> y1<-sample(seq(from = 5, by = 1, length.out = 40), 10, replace = TRUE)
+> y2<-sample(seq(from = 5, by = 1, length.out = 40), 10, replace = TRUE)
+> y3<-sample(seq(from = 5, by = 1, length.out = 40), 10, replace = TRUE)
+
+> plot_data<-data.frame(x = c(1:10), y = c(y1, y2, y3), group = c("value_y1", "value_y2", "value_y3"))
+> ggplot(plot_data, aes( x = x, y = y, group = group, fill = group)) + geom_area()
+
+
+> plot_data1<-data.frame(x = seq(from = 0, by = 3, length.out = 10), y = c(y1, y2, y3), group = c("value_y1", "value_y2", "value_y3"))
+> ggplot(plot_data1, aes( x = x, y = y, group = group, fill = group)) + geom_area()
+
+
+```  
+
+
+
+### 直方图和密度曲线图 ###
+
+如果想要研究一个变量的分布情况, 则需要使用直方图和密度曲线图.  
+
+```  
+> c1<-sample(seq(from = 0, by = 1, length.out = 50), 15, replace = TRUE) 
+
+> hist(c1, main = "Hello 直方图", xlab = "x轴", ylab = "y轴", breaks = seq(from = 0, by = 5, length.out = 11))
+
+> hist(c1, main = "Hello 直方图2", xlab = "x轴", ylab = "y轴", breaks = seq(from = 0, by =10, length.out = 6))
+
+```  
+
+hist是绘制直方图的核心函数, 通过 breaks参数可以设置统计尺度.  
+
+直方图和柱状图类似, 但是它们表达的意义完全不同. 柱状图中各个立柱的高度直接代表取值, x轴代表样本点序列. 而在直方图中, x轴代表统计尺度, 各个立柱的高度表示各个统计尺度下样本的数目.  
+
+
+当把统计尺度的间隔无限缩小时, 直方图变为了密度曲线图. 密度曲线的绘制并无其他特殊函数, 先通过density函数计算出变量的密度曲线数据, 再使用plot函数直接绘制出其曲线图.  
+
+```  
+> c2<-sample(seq(from = 10, by = 0.1, length.out = 100), 100, replace = TRUE)
+> plot(density(c2), main = "Hello 密度曲线", xlab = "x轴", ylab = "y轴")
+> rug(c2)
+
+```  
 
 
 
