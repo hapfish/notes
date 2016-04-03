@@ -4521,6 +4521,48 @@ hist是绘制直方图的核心函数, 通过 breaks参数可以设置统计尺�
 ```  
 
 
+## 绘图窗口操作函数 ##
+
+par函数中的mfrow参数可以把当前活动窗口分割为子绘图区域. 其取值是 c(nrow, ncol) 形式, 分别设置行数和列数.  
+` par(mfrow = c(<nrow>, <ncol>) `  
+
+par函数不仅可以设置单一窗口内的多图布局, 还可以统一设计其他常用的点, 线, 文字等元素的参数属性值. 帮助命令 ` ?par `  
+
+
+绘图窗口函数主要是指dev.&lt;xxx&gt; 的一系列函数  
+
+<table>
+  <tr>
+    <th>函数形式</th>  <th>说明</th>
+  </tr>
+  
+  <tr>
+    <td>dev.new()</td>  <td>新建一个绘图窗口</td>
+  </tr>
+  <tr>
+    <td>dev.cur()</td>  <td>返回当前活动的绘图窗口ID</td>
+  </tr>
+  <tr>
+    <td>dev.list()</td>  <td>返回所有已经打开的绘图窗口ID</td>
+  </tr>
+  <tr>
+    <td>dev.off( which = dev.cur() )</td>  <td>关闭指定绘图窗口, 默认关闭当前活动窗口</td>
+  </tr>
+  <tr>
+    <td>dev.next( which = dev.cur() )</td>  <td>返回指定绘图窗口的下一个窗口的ID, 默认值为当前活动窗口</td>
+  </tr>
+  
+  <tr>
+    <td>dev.prev( which = dev.cur() )</td>  <td>返回指定绘图窗口的上一个窗口的ID, 默认值为当前活动窗口</td>
+  </tr>
+  <tr>
+    <td>dev.set( which = dev.next() )</td>  <td>指定特定绘图窗口为当前活动窗口, 默认指定当前活动窗口的下一个窗口</td>
+  </tr>
+</table>
+
+  
+
+
 
 
 
