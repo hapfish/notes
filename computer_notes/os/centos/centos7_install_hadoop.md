@@ -290,7 +290,11 @@ localhost: starting nodemanager, logging to /usr/local/hadoop-2.7.2/logs/yarn-ro
 
 ```  
 
-访问 http://192.168.1.100:50070/　查看  
+
+**NameNode**  http://192.168.1.100:50070/  
+**ResourceManager**  http://192.168.1.100:8088  
+**MapReduce JobHistory Server**   http://192.168.1.100:19888 (未启动)  
+
 
 向hdfs中放入文件  
 ```  
