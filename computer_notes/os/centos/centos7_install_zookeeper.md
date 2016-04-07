@@ -4,6 +4,8 @@ centos7_install_zookeeper
 
 [zookeeper下载地址](http://mirror.bit.edu.cn/apache/zookeeper/)  
 
+[官方文档](http://zookeeper.apache.org/doc/r3.4.8/zookeeperStarted.html)  
+
 
 
 ## 需要先安装JDK ##
@@ -39,6 +41,13 @@ $ sudo vim /usr/local/zookeeper-3.4.8/conf/zoo.cfg
 # dataDir=/tmp/zookeeper
 dataDir=/var/zookeeper
 
+server.1=hadoop1:2888:3888
+
+$ sudo vim /var/zookeeper/myid
+1
+$ cat /var/zookeeper/myid
+1
+
 
 $ sudo /usr/local/zookeeper-3.4.8/bin/zkServer.sh start
 ZooKeeper JMX enabled by default
@@ -46,13 +55,20 @@ Using config: /usr/local/zookeeper-3.4.8/bin/../conf/zoo.cfg
 Starting zookeeper ... STARTED
 
 
+
+
+
 $ sudo jps
-11164 QuorumPeerMain
+3554 QuorumPeerMain
+3615 ZooKeeperMain
 
 $ sudo ps -ef | grep zookeeper
 
 
 ```  
+
+单机版可以不添加 ` server.1=hadoop1:2888:3888 ` , 不使用 ` /var/zookeeper/myid ` 文件.  
+
 
 ## 使用zkCli连接 ##
 
@@ -130,6 +146,7 @@ Node not empty: /test/data1
 
 		
 ```  
+
 
 
 
