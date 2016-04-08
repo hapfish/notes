@@ -161,6 +161,7 @@ $ sudo cat /usr/local/hive-2.0.0/conf/hive-site.xml | grep "system:java.io"
 
 $ sudo mkdir -p /var/hive/tmp
 
+$ sudo vim /usr/local/hive-2.0.0/conf/hive-site.xml
   <property>
     <name>hive.exec.local.scratchdir</name>
     <!-- <value>${system:java.io.tmpdir}/${system:user.name}</value> -->
