@@ -112,6 +112,8 @@ mysql> select host, user from mysql.user;
 
 $ mysql -uroot -p
 
+mysql> select host, user, authentication_string, password_expired, password_last_changed, password_lifetime, account_locked from mysql.user;
+
 ```  
 
 

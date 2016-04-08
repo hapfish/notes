@@ -67,7 +67,7 @@ $ sudo ps -ef | grep zookeeper
 
 ```  
 
-单机版可以不添加 ` server.1=hadoop1:2888:3888 ` , 不使用 ` /var/zookeeper/myid ` 文件.  
+单机模式运行时, 可以不添加 ` server.1=hadoop1:2888:3888 ` , 不使用 ` /var/zookeeper/myid ` 文件.  
 
 
 ## 使用zkCli连接 ##
