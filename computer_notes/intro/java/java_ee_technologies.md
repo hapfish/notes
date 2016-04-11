@@ -178,8 +178,9 @@ Java EE Technologies
 
 **JMA API** Java Management API  
 
+**JTS**  Java transaction Service  
 
-**JTS** Java Media Framework API  
+**JMF**  Java Media Framework API  
 
 **Annotation** Java Annotation  
 
