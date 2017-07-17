@@ -179,7 +179,26 @@ tmpfs                    100M     0  100M   0% /run/user/0
 ```  
 
 
+# 错误信息  
 
+```  
+NtCreateFile(\Device\VBoxDrvStub) failed: 0xc000000034
+STATUS_OBJECT_NAME_NOT_FOUND (0 retries) (rc=-101)
+Make sure the kernel module has been loaded successfully.
+
+
+>sc query vboxdrv
+
+>sc start vboxdrv
+[SC] StartService: OpenService 失败 1060:
+
+C:\Program Files\Oracle\VirtualBox\drivers\vboxdrv
+VBoxDrv.inf   右键安装  
+
+
+
+
+```  
 
 
 

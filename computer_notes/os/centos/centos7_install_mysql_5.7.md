@@ -170,6 +170,44 @@ mysql> show create table t1;
 mysql>
 
 
+# 创建用户  
+mysql> grant all privileges on *.* to github_demo@'%' identified by 'GitHubDemo2017!';
+
+# mysql -ugithub_demo -p
+
+
+mysql> create database demo_database;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> show create database demo_database;
++---------------+------------------------------------------------------------------------+
+| Database      | Create Database                                                        |
++---------------+------------------------------------------------------------------------+
+| demo_database | CREATE DATABASE `demo_database` /*!40100 DEFAULT CHARACTER SET utf8 */ |
++---------------+------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> use demo_database;
+
+
+Database changed
+mysql> create table demo_person(id bigint primary key not null auto_increment,
+    -> name varchar(64),
+    -> unique index unique_name(name));
+Query OK, 0 rows affected (0.01 sec)
+
+
+
+mysql> insert into demo_person(id, name) values (1001, 'Tom@qq.com');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into demo_person(id, name) values (1002, 'demo1002@qq.com');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into demo_person(id, name) values (1003, '测试1003');
+Query OK, 1 row affected (0.00 sec)
+
+
 ```  
 
 
