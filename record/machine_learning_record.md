@@ -2,7 +2,40 @@
 # machine_learning_record.md  
 
 
+Spark MLLib document  
+http://spark.apache.org/docs/2.1.0/ml-guide.html  
+
+MLlib Main Guide  
+ - Pipelines  
+ - Extracting, transforming and selecting features 提取转化和选择功能    
+ - Classification and regression 分类和回归  
+ - Clustering 聚类  
+ - Collaborative Filtering 协同过滤  
+ - Model selection and tuning 模型选择和调优  
+ - Advanced topics   
+
+
+MLlib RDD-based API Guide  
+ - Data types  
+ - Basic statistics 基本统计  
+ - Classification and regression 分类和回归  
+ - Collaborative filtering 协同过滤   
+ - Clustering 聚类   
+ - Dimensionality reduction 降维   
+ - Feature extraction and transformation 特征提取和转化   
+ - Frequent pattern mining 频繁模式挖掘   
+ - Evaluation metrics 评价标准   
+ - PMML model export  
+ - Optimization (developer)  
+ 
+ 
+ 
+ 
+ 
+ 
+
 # 基础概念  
+
 
 ## R语言核心技术手册  
 
