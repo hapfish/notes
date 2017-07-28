@@ -29,7 +29,42 @@ MLlib RDD-based API Guide
  - Optimization (developer)  
  
  
+回归和分类 - 基于RDD的API  
+
+<table>
+  <tr>
+    <th>问题类型</th>    <th>支持方法</th>  
+  </tr>
+  
+  <tr>
+    <td>Binary Classification 二元分类</td>    
+	<td>linear SVMs 线性支持向量机, logistic regression 逻辑回归, decision trees 决策树, 
+	random forests 随机森林, gradient-boosted trees 梯度提高树, naive Bayes 朴素贝叶斯 </td>
+  </tr>
+  
+  <tr>
+    <td>Multiclass Classification 多类分类 </td>   
+	<td>logistic regression 逻辑回归, decision trees 决策树, random forests 随机森林,  naive Bayes 朴素贝叶斯 </td>  
+  </tr>
+  
+  <tr>
+    <td>Regression 回归</td>  
+	<td>linear least squares 线性最小二乘, Lasso 套索, ridge regression 岭回归, decision trees 决策树, random forests 随机森林,
+	gradient-boosted trees 梯度提高树, isotonic regression 保序回归  
+  </tr>
+</table> 
  
+- [Linear models线性模型](http://spark.apache.org/docs/2.1.0/mllib-linear-methods.html)  
+- [Decision trees 决策树](http://spark.apache.org/docs/2.1.0/mllib-decision-tree.html)  
+- [Ensembles of decision trees 决策树集合](http://spark.apache.org/docs/2.1.0/mllib-ensembles.html)  
+- [Naive Bayes 朴素贝叶斯](http://spark.apache.org/docs/2.1.0/mllib-naive-bayes.html)  
+- [Isotonic regression 保序回归](http://spark.apache.org/docs/2.1.0/mllib-isotonic-regression.html)  
+
+
+
+
+  
+
  
  
  
