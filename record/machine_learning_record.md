@@ -61,6 +61,14 @@ MLlib RDD-based API Guide
 - [Isotonic regression 保序回归](http://spark.apache.org/docs/2.1.0/mllib-isotonic-regression.html)  
 
 
+[Clustering](http://spark.apache.org/docs/2.1.0/mllib-clustering.html)     
+- [K-means K均值聚类](http://spark.apache.org/docs/2.1.0/mllib-clustering.html#k-means)  
+- [Gaussian mixture 高斯混合](http://spark.apache.org/docs/2.1.0/mllib-clustering.html#gaussian-mixture)  
+- [Power Iteration clustering - PIC 幂迭代聚类](http://spark.apache.org/docs/2.1.0/mllib-clustering.html#power-iteration-clustering-pic)  
+- [Latent Dirichlet allocation - LDA 隐含狄利克雷分布](http://spark.apache.org/docs/2.1.0/mllib-clustering.html#latent-dirichlet-allocation-lda)  
+- [Bisecting k-means 二分K均值聚类](http://spark.apache.org/docs/2.1.0/mllib-clustering.html#bisecting-k-means)  
+- [Streaming k-means 流K均值聚类](http://spark.apache.org/docs/2.1.0/mllib-clustering.html#streaming-k-means)  
+
 
 
   
