@@ -70,6 +70,24 @@ MLlib RDD-based API Guide
 - [Streaming k-means 流K均值聚类](http://spark.apache.org/docs/2.1.0/mllib-clustering.html#streaming-k-means)  
 
 
+[Dimensionality Reduction 降维](http://spark.apache.org/docs/2.1.0/mllib-dimensionality-reduction.html)  
+- [SVD - singular value decomposition 奇异值分解 ](http://spark.apache.org/docs/2.1.0/mllib-dimensionality-reduction.html#singular-value-decomposition-svd)  
+- [PCA - principal component analysis 主成分分析 ](http://spark.apache.org/docs/2.1.0/mllib-dimensionality-reduction.html#principal-component-analysis-pca)  
+
+
+
+[Feature Extraction and Transformation 特征提取与转化 ](http://spark.apache.org/docs/2.1.0/mllib-feature-extraction.html)  
+- [ChiSqSelector 卡方选择器](http://spark.apache.org/docs/2.1.0/mllib-feature-extraction.html#chisqselector)  
+- [ElementwiseProduct 元素智能乘积](http://spark.apache.org/docs/2.1.0/mllib-feature-extraction.html#elementwiseproduct)  
+
+Chi-Squared test of independence 独立性测试
+
+[optinization ](http://spark.apache.org/docs/2.1.0/mllib-optimization.html)  
+- [L-BFGS](http://spark.apache.org/docs/2.1.0/mllib-optimization.html#l-bfgs)    
+
+
+
+
 
   
 
