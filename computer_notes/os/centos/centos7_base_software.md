@@ -1,4 +1,27 @@
 
+# add user  
+
+```  
+-- add user and allow sudo  
+# useradd lidongxu
+# passwd lidongxu
+# vi /etc/sudoers
+lidongxu    ALL=NOPASSWD:ALL
+
+-- new user
+$ sudo ls /
+$ sudo yum -y install vim
+
+$ mkdir /soft
+mkdir: cannot create directory ‘/soft’: Permission denied
+$ sudo mkdir /software
+
+
+```  
+
+ 
+
+
 
 # firewall  
 ```  
