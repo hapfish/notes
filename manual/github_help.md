@@ -18,6 +18,20 @@
 # git branch
 # git branch -r
 # git checkout -b CentOS-7.1.1503 origin/CentOS-7.1.1503
+
+
+$ git branch release/release_0.0.0.1
+$ git branch
+$ git push origin release/release_0.0.0.1
+$ git branch -d release/release_0.0.0.1
+
+
+$ git tag -a release/0.0.0.1 -m 'release 0.0.0.1'
+$ git tag
+$ git push origin release/0.0.0.1
+$ git tag -d release/0.0.0.1
+
+
 ```
 
 git config  

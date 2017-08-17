@@ -77,3 +77,16 @@ public
 
 ```  
 
+# awk  
+```  
+$ last -n 5 | awk '{print $1}'
+
+$ echo 'hello workld' | awk '{print NF}'
+2
+
+
+
+```  
+
+
+

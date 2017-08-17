@@ -23,7 +23,7 @@ passwd: all authentication tokens updated successfully.
 [root@hadoop1 ~]# visudo
 ## Allow root to run any commands anywhere
 root    ALL=(ALL)       ALL
-bigdata   ALL=(ALL)    NOPASSWD:    ALL
+bigdata   ALL=NOPASSWD:ALL
 
 
 ```  
